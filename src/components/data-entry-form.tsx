@@ -71,15 +71,49 @@ const formSchema = z.object({
 });
 
 
+import { useBankData } from "@/hooks/use-bank-data";
+
 export default function DataEntryForm({ initialData, onSave, selectedDate, onCancel }: DataEntryFormProps) {
     const { toast } = useToast();
-    
+    const { getLatestRecord } = useBankData();
+    const [prefillLoading, setPrefillLoading] = React.useState(true);
+    const [latestRecord, setLatestRecord] = React.useState<DailyRecord | null>(null);
+
+    React.useEffect(() => {
+        const fetchPrefillData = async () => {
+            if (!initialData) {
+                setPrefillLoading(true);
+                const record = await getLatestRecord(selectedDate);
+                setLatestRecord(record);
+                setPrefillLoading(false);
+            } else {
+                setPrefillLoading(false);
+            }
+        };
+        fetchPrefillData();
+    }, [selectedDate, initialData, getLatestRecord]);
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            accounts: initialData ? JSON.parse(JSON.stringify(initialData.accounts)) : [],
+            accounts: initialData?.accounts 
+                ? JSON.parse(JSON.stringify(initialData.accounts)) 
+                : latestRecord?.accounts 
+                    ? JSON.parse(JSON.stringify(latestRecord.accounts)) 
+                    : [],
         },
     });
+
+    React.useEffect(() => {
+        if (!initialData && latestRecord) {
+            form.reset({ accounts: JSON.parse(JSON.stringify(latestRecord.accounts)) });
+        } else if (initialData) {
+            form.reset({ accounts: JSON.parse(JSON.stringify(initialData.accounts)) });
+        } else {
+            form.reset({ accounts: [] });
+        }
+    }, [initialData, latestRecord, form]);
+
 
     const { fields, append, remove } = useFieldArray({
         control: form.control,
@@ -94,6 +128,14 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
             className: "bg-accent text-accent-foreground",
         });
     };
+
+  if (prefillLoading) {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <p className="text-muted-foreground">Loading previous data...</p>
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>

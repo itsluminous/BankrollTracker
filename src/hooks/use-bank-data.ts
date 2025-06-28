@@ -1,111 +1,279 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import type { DailyRecord } from '@/lib/types';
+import type { DailyRecord, Account, FixedDeposit } from '@/lib/types';
 import { format, parseISO, isBefore, compareDesc, isValid } from 'date-fns';
-
-const STORAGE_KEY = 'bankroll-data';
-
-const getInitialData = (): Record<string, DailyRecord> => {
-    const today = new Date();
-    const todayStr = format(today, 'yyyy-MM-dd');
-    const fd1Maturity = new Date();
-    fd1Maturity.setMonth(fd1Maturity.getMonth() + 6);
-    const fd2Maturity = new Date();
-    fd2Maturity.setFullYear(fd2Maturity.getFullYear() + 1);
-
-    return {
-        [todayStr]: {
-            date: todayStr,
-            accounts: [
-                {
-                    id: '1',
-                    holderName: 'Hari Savings',
-                    bankName: 'HDFC',
-                    accountNumber: '435435345',
-                    balance: 340303,
-                    fds: [
-                        { id: 'fd1', principal: 280000, maturityDate: format(fd1Maturity, 'yyyy-MM-dd') },
-                        { id: 'fd2', principal: 1250000, maturityDate: format(fd2Maturity, 'yyyy-MM-dd') },
-                    ]
-                },
-                {
-                    id: '2',
-                    holderName: 'Om Savings',
-                    bankName: 'SBI',
-                    accountNumber: '12345678901',
-                    balance: 520100,
-                    fds: []
-                }
-            ]
-        }
-    };
-};
+import { supabase } from '@/lib/supabase';
+import { useAuth } from './use-auth';
 
 export function useBankData() {
+    const { user, loading: authLoading } = useAuth();
     const [data, setData] = useState<Record<string, DailyRecord>>({});
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    const fetchDailyRecords = useCallback(async () => {
+        if (!user) {
+            setData({});
+            setLoading(false);
+            return;
+        }
+
+        setLoading(true);
         try {
-            const storedData = localStorage.getItem(STORAGE_KEY);
-            if (storedData) {
-                setData(JSON.parse(storedData));
-            } else {
-                const initial = getInitialData();
-                setData(initial);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+            const { data: records, error } = await supabase
+                .from('daily_records')
+                .select(`
+                    id,
+                    record_date,
+                    accounts (
+                        id,
+                        holder_name,
+                        bank_name,
+                        account_number,
+                        balance,
+                        fixed_deposits (
+                            id,
+                            principal,
+                            maturity_date
+                        )
+                    )
+                `)
+                .eq('user_id', user.id)
+                .order('record_date', { ascending: false });
+
+            if (error) {
+                throw error;
             }
+
+            const formattedData: Record<string, DailyRecord> = {};
+            records?.forEach(record => {
+                const dateStr = format(parseISO(record.record_date), 'yyyy-MM-dd');
+                formattedData[dateStr] = {
+                    date: dateStr,
+                    accounts: record.accounts.map((acc: any) => ({
+                        id: acc.id,
+                        holderName: acc.holder_name,
+                        bankName: acc.bank_name,
+                        accountNumber: acc.account_number,
+                        balance: acc.balance,
+                        fds: acc.fixed_deposits.map((fd: any) => ({
+                            id: fd.id,
+                            principal: fd.principal,
+                            maturityDate: format(parseISO(fd.maturity_date), 'yyyy-MM-dd'),
+                        }))
+                    }))
+                };
+            });
+            setData(formattedData);
         } catch (error) {
-            console.error("Failed to load data from localStorage", error);
-            // In case of error, set initial data
-            setData(getInitialData());
+            console.error("Error fetching daily records:", error);
+            setData({});
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [user]);
 
-    const saveData = useCallback((date: Date, newRecord: Omit<DailyRecord, 'date'>) => {
+    useEffect(() => {
+        if (!authLoading) {
+            fetchDailyRecords();
+        }
+    }, [user, authLoading, fetchDailyRecords]);
+
+    const saveData = useCallback(async (date: Date, newRecord: Omit<DailyRecord, 'date'>) => {
+        if (!user) {
+            console.error("User not authenticated. Cannot save data.");
+            return;
+        }
+
         const dateStr = format(date, 'yyyy-MM-dd');
-        const updatedData = {
-            ...data,
-            [dateStr]: { ...newRecord, date: dateStr }
-        };
-        setData(updatedData);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
-    }, [data]);
 
-    const getLatestRecord = useCallback((beforeDate: Date | undefined) => {
-        if (!beforeDate || !isValid(beforeDate)) return null;
-
-        const allDates = Object.keys(data)
-            .map(dateStr => parseISO(dateStr))
-            .filter(d => isValid(d) && isBefore(d, beforeDate));
-
-        if (allDates.length === 0) return null;
-
-        allDates.sort(compareDesc);
-
-        const latestDateStr = format(allDates[0], 'yyyy-MM-dd');
-        return data[latestDateStr] || null;
-
-    }, [data]);
-
-    const importData = useCallback((newData: Record<string, DailyRecord>) => {
         try {
-            // A more robust validation could be done here with Zod.
-            // For now, just checking if it's an object.
-            if (typeof newData === 'object' && newData !== null && !Array.isArray(newData)) {
-                setData(newData);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
-                return true;
+            // Check if a record for this date already exists
+            const { data: existingRecord, error: fetchError } = await supabase
+                .from('daily_records')
+                .select('id')
+                .eq('user_id', user.id)
+                .eq('record_date', dateStr)
+                .single();
+
+            let dailyRecordId: string;
+
+            if (existingRecord) {
+                dailyRecordId = existingRecord.id;
+                // Delete existing accounts and FDs for this daily record to prevent duplicates
+                await supabase.from('fixed_deposits').delete().eq('user_id', user.id).in('account_id', newRecord.accounts.map(acc => acc.id));
+                await supabase.from('accounts').delete().eq('user_id', user.id).eq('daily_record_id', dailyRecordId);
+            } else {
+                // Insert new daily record
+                const { data: insertedRecord, error: insertRecordError } = await supabase
+                    .from('daily_records')
+                    .insert({ user_id: user.id, record_date: dateStr })
+                    .select('id')
+                    .single();
+
+                if (insertRecordError) throw insertRecordError;
+                dailyRecordId = insertedRecord.id;
             }
-            return false;
+
+            // Insert accounts and FDs
+            for (const account of newRecord.accounts) {
+                const { data: insertedAccount, error: insertAccountError } = await supabase
+                    .from('accounts')
+                    .insert({
+                        daily_record_id: dailyRecordId,
+                        user_id: user.id,
+                        holder_name: account.holderName,
+                        bank_name: account.bankName,
+                        account_number: account.accountNumber,
+                        balance: account.balance,
+                    })
+                    .select('id')
+                    .single();
+
+                if (insertAccountError) throw insertAccountError;
+
+                if (account.fds && account.fds.length > 0) {
+                    const fdsToInsert = account.fds.map(fd => ({
+                        account_id: insertedAccount.id,
+                        user_id: user.id,
+                        principal: fd.principal,
+                        maturity_date: fd.maturityDate,
+                    }));
+                    const { error: insertFdsError } = await supabase
+                        .from('fixed_deposits')
+                        .insert(fdsToInsert);
+
+                    if (insertFdsError) throw insertFdsError;
+                }
+            }
+
+            // Re-fetch data to update state
+            await fetchDailyRecords();
+
         } catch (error) {
-            console.error("Failed to import data", error);
+            console.error("Error saving data:", error);
+        }
+    }, [user, fetchDailyRecords]);
+
+    const getLatestRecord = useCallback(async (beforeDate: Date | undefined) => {
+        if (!user || !beforeDate || !isValid(beforeDate)) return null;
+
+        const dateStr = format(beforeDate, 'yyyy-MM-dd');
+
+        try {
+            const { data: record, error } = await supabase
+                .from('daily_records')
+                .select(`
+                    id,
+                    record_date,
+                    accounts (
+                        id,
+                        holder_name,
+                        bank_name,
+                        account_number,
+                        balance,
+                        fixed_deposits (
+                            id,
+                            principal,
+                            maturity_date
+                        )
+                    )
+                `)
+                .eq('user_id', user.id)
+                .lt('record_date', dateStr) // Get records before the specified date
+                .order('record_date', { ascending: false })
+                .limit(1)
+                .single();
+
+            if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
+                throw error;
+            }
+
+            if (!record) return null;
+
+            return {
+                date: format(parseISO(record.record_date), 'yyyy-MM-dd'),
+                accounts: record.accounts.map((acc: any) => ({
+                    id: acc.id,
+                    holderName: acc.holder_name,
+                    bankName: acc.bank_name,
+                    accountNumber: acc.account_number,
+                    balance: acc.balance,
+                    fds: acc.fixed_deposits.map((fd: any) => ({
+                        id: fd.id,
+                        principal: fd.principal,
+                        maturityDate: format(parseISO(fd.maturity_date), 'yyyy-MM-dd'),
+                    }))
+                }))
+            };
+
+        } catch (error) {
+            console.error("Error fetching latest record:", error);
+            return null;
+        }
+    }, [user]);
+
+    const importData = useCallback(async (newData: Record<string, DailyRecord>) => {
+        if (!user) {
+            console.error("User not authenticated. Cannot import data.");
             return false;
         }
-    }, []);
 
-    return { data, loading, getLatestRecord, saveData, importData };
+        try {
+            // Delete all existing data for the user first
+            await supabase.from('fixed_deposits').delete().eq('user_id', user.id);
+            await supabase.from('accounts').delete().eq('user_id', user.id);
+            await supabase.from('daily_records').delete().eq('user_id', user.id);
+
+            for (const dateStr in newData) {
+                const record = newData[dateStr];
+                const { data: insertedRecord, error: insertRecordError } = await supabase
+                    .from('daily_records')
+                    .insert({ user_id: user.id, record_date: record.date })
+                    .select('id')
+                    .single();
+
+                if (insertRecordError) throw insertRecordError;
+                const dailyRecordId = insertedRecord.id;
+
+                for (const account of record.accounts) {
+                    const { data: insertedAccount, error: insertAccountError } = await supabase
+                        .from('accounts')
+                        .insert({
+                            daily_record_id: dailyRecordId,
+                            user_id: user.id,
+                            holder_name: account.holderName,
+                            bank_name: account.bankName,
+                            account_number: account.accountNumber,
+                            balance: account.balance,
+                        })
+                        .select('id')
+                        .single();
+
+                    if (insertAccountError) throw insertAccountError;
+
+                    if (account.fds && account.fds.length > 0) {
+                        const fdsToInsert = account.fds.map(fd => ({
+                            account_id: insertedAccount.id,
+                            user_id: user.id,
+                            principal: fd.principal,
+                            maturity_date: fd.maturityDate,
+                        }));
+                        const { error: insertFdsError } = await supabase
+                            .from('fixed_deposits')
+                            .insert(fdsToInsert);
+
+                        if (insertFdsError) throw insertFdsError;
+                    }
+                }
+            }
+            await fetchDailyRecords();
+            return true;
+        } catch (error) {
+            console.error("Failed to import data:", error);
+            return false;
+        }
+    }, [user, fetchDailyRecords]);
+
+    return { data, loading: loading || authLoading, getLatestRecord, saveData, importData };
 }

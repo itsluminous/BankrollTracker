@@ -53,11 +53,6 @@ export default function BankrollTrackerPage() {
 
   const selectedDateStr = date ? format(date, "yyyy-MM-dd") : "";
   const record = data[selectedDateStr];
-  const latestRecord = React.useMemo(
-    () => getLatestRecord(date),
-    [date, getLatestRecord]
-  );
-
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate && isValid(selectedDate)) {
       setDate(selectedDate);
@@ -96,12 +91,12 @@ export default function BankrollTrackerPage() {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const text = e.target?.result;
         if (typeof text !== "string") {
@@ -109,7 +104,7 @@ export default function BankrollTrackerPage() {
         }
         const parsedData = JSON.parse(text);
 
-        const success = importData(parsedData);
+        const success = await importData(parsedData);
         if (success) {
           toast({
             title: "Import Successful!",
@@ -208,7 +203,7 @@ export default function BankrollTrackerPage() {
                 ) : (
                   <DataEntryForm
                     key={selectedDateStr}
-                    initialData={record ? record : latestRecord}
+                    initialData={record}
                     onSave={handleSave}
                     selectedDate={date || new Date()}
                     onCancel={record ? () => setIsEditing(false) : undefined}

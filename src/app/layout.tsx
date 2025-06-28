@@ -1,17 +1,36 @@
+"use client";
+
 import type {Metadata} from 'next';
 import './globals.css';
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter, usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { supabase } from '@/lib/supabase';
 
-export const metadata: Metadata = {
-  title: 'Bankroll Tracker',
-  description: 'Track your bank balances and fixed deposits with ease.',
-};
+
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!loading && !user && pathname !== '/auth/login') {
+      router.push('/auth/login');
+    }
+  }, [user, loading, pathname, router]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/auth/login');
+  };
+
   return (
     <html lang="en">
       <head>
@@ -20,6 +39,13 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
+        {user && pathname !== '/auth/login' && (
+          <div className="absolute top-4 right-4">
+            <Button onClick={handleLogout} variant="outline">
+              Logout
+            </Button>
+          </div>
+        )}
         {children}
         <Toaster />
       </body>
