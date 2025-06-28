@@ -136,7 +136,7 @@ export default function BankrollTrackerPage() {
                     <Skeleton className="h-20 w-full" />
                   </div>
                 ) : record && !isEditing ? (
-                  <DailyView record={record} onEdit={() => setIsEditing(true)} />
+                  <DailyView key={selectedDateStr} record={record} onEdit={() => setIsEditing(true)} />
                 ) : (
                   <DataEntryForm
                     key={selectedDateStr}
