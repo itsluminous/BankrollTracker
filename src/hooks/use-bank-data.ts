@@ -10,6 +10,7 @@ export function useBankData() {
     const { user, loading: authLoading } = useAuth();
     const [data, setData] = useState<Record<string, DailyRecord>>({});
     const [loading, setLoading] = useState(true);
+    const [hasFetchedInitialData, setHasFetchedInitialData] = useState(false);
 
     const fetchDailyRecords = useCallback(async () => {
         if (!user) {
@@ -74,10 +75,11 @@ export function useBankData() {
     }, [user]);
 
     useEffect(() => {
-        if (!authLoading) {
+        if (!authLoading && !hasFetchedInitialData) {
             fetchDailyRecords();
+            setHasFetchedInitialData(true);
         }
-    }, [user, authLoading, fetchDailyRecords]);
+    }, [user, authLoading, fetchDailyRecords, hasFetchedInitialData]);
 
     const saveData = useCallback(async (date: Date, newRecord: Omit<DailyRecord, 'date'>) => {
         if (!user) {

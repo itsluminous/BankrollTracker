@@ -2,7 +2,15 @@
 
 import * as React from "react";
 import { format, isValid, parseISO } from "date-fns";
-import { ArrowLeft, Download, LineChart, Upload, Wallet } from "lucide-react";
+import { ArrowLeft, LineChart, Wallet } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 import type { DailyRecord } from "@/lib/types";
 import { useBankData } from "@/hooks/use-bank-data";
@@ -26,6 +34,7 @@ export default function BankrollTrackerPage() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [view, setView] = React.useState<"dashboard" | "trend">("dashboard");
   const [isEditing, setIsEditing] = React.useState(false);
+  const [showCalendarOverlay, setShowCalendarOverlay] = React.useState(false);
   const { data, loading, getLatestRecord, saveData } =
     useBankData();
   const { toast } = useToast();
@@ -55,6 +64,7 @@ export default function BankrollTrackerPage() {
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate && isValid(selectedDate)) {
       setDate(selectedDate);
+      setShowCalendarOverlay(false);
     }
   };
 
@@ -71,7 +81,7 @@ export default function BankrollTrackerPage() {
         <div className="flex items-center gap-2">
           <Wallet className="h-6 w-6 text-primary" />
           <h1 className="text-xl font-semibold text-foreground">
-            Bankroll Tracker
+            Balance Tracker
           </h1>
         </div>
         {view === "dashboard" ? (
@@ -88,22 +98,34 @@ export default function BankrollTrackerPage() {
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         {view === "dashboard" ? (
-          <div className="grid gap-4 md:gap-8 lg:grid-cols-[auto_1fr]">
-            <Card className="w-min self-start">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={handleDateSelect}
-                initialFocus
-                modifiers={modifiers}
-                modifiersClassNames={modifiersClassNames}
-              />
-              
-            </Card>
+          <div className="grid gap-4 md:gap-8 lg:grid-cols-[1fr]">
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {date ? format(date, "dd MMMM yyyy") : ""}
+                  <Dialog open={showCalendarOverlay} onOpenChange={setShowCalendarOverlay}>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" className="text-xl font-semibold text-foreground p-0 h-auto underline text-blue-600">
+                        {date ? format(date, "dd MMMM yyyy") : ""}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="w-auto max-w-fit">
+                      <DialogHeader>
+                        <DialogTitle>Select Date</DialogTitle>
+                        <DialogDescription>
+                          View or enter balance data.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={handleDateSelect}
+                        initialFocus
+                        modifiers={modifiers}
+                        modifiersClassNames={modifiersClassNames}
+                        className="p-0"
+                      />
+                    </DialogContent>
+                  </Dialog>
                 </CardTitle>
               </CardHeader>
               <CardContent>
