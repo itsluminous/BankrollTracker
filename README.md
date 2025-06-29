@@ -44,7 +44,7 @@ Open the local URL provided in the output (e.g., `http://localhost:3000`) in you
 -   **Calendar View**: A clean calendar interface to select dates and see which days have recorded data at a glance.
 -   **Trend Graph**: Visualize your total balance over time with a dynamic graph that automatically adjusts its granularity (daily, weekly, monthly) based on the available screen space.
 -   **Daily View Layout**: A detailed daily view that displays account and Fixed Deposit (FD) details in collapsible, easy-to-read sections.
--   **Data Export & Import**: Easily export your entire dataset to a JSON file for backup, and import it back whenever needed. There is also a "Copy for WhatsApp" button that formats your daily balance details for easy sharing.
+-   **Data Export & Import**: Easily export your entire dataset to a JSON file for backup, and import it back whenever needed. There is also a "Copy" button that formats your daily balance details for easy sharing.
 -   **Data Entry Form**: An intuitive form for entering your financial data. It comes pre-filled with the previous day's data to speed up entry and includes validation for matured FDs.
 -   **Responsive Design**: A clean and modern UI that works seamlessly on both desktop and mobile devices.
 

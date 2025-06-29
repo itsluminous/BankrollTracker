@@ -68,7 +68,7 @@ export default function DailyView({ record, onEdit }: DailyViewProps) {
         </div>
         <div className="flex items-center gap-2">
           <Button onClick={onEdit} variant="outline"><Pencil className="mr-2 h-4 w-4" /> Edit</Button>
-          <Button onClick={handleCopy}><Copy className="mr-2 h-4 w-4" /> Copy for WhatsApp</Button>
+          <Button onClick={handleCopy}><Copy className="mr-2 h-4 w-4" /> Copy</Button>
         </div>
       </div>
       <Separator />

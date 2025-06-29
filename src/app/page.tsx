@@ -16,6 +16,7 @@ import { useBankData } from "@/hooks/use-bank-data";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -40,6 +41,7 @@ export default function BankrollTrackerPage() {
     useBankData();
   const { toast } = useToast();
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -102,17 +104,17 @@ export default function BankrollTrackerPage() {
           {view === "dashboard" ? (
             <Button variant="outline" onClick={() => setView("trend")}>
               <LineChart className="mr-2 h-4 w-4" />
-              View Trend
+              {isMobile ? "Trend" : "View Trend"}
             </Button>
           ) : (
             <Button variant="outline" onClick={() => setView("dashboard")}>
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Dashboard
+              {isMobile ? "Dashboard" : "Back to Dashboard"}
             </Button>
           )}
           <Button variant="outline" onClick={handleLogout}>
-            <Power className="mr-2 h-4 w-4" />
-            Logout
+            <Power className={isMobile ? "" : "mr-2"} />
+            {!isMobile && "Logout"}
           </Button>
         </div>
       </header>
@@ -187,3 +189,4 @@ export default function BankrollTrackerPage() {
     </div>
   );
 }
+

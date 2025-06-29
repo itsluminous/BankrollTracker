@@ -28,10 +28,6 @@ export default function LoginPage() {
         variant: 'destructive',
       });
     } else {
-      toast({
-        title: 'Login Successful',
-        description: 'You have been logged in.',
-      });
       router.push('/');
     }
     setLoading(false);
