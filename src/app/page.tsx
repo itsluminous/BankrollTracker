@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { format, isValid, parseISO } from "date-fns";
-import { ArrowLeft, LineChart, Wallet } from "lucide-react";
+import { ArrowLeft, LineChart, Power, Wallet } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,9 +12,10 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-import type { DailyRecord } from "@/lib/types";
 import { useBankData } from "@/hooks/use-bank-data";
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -38,6 +39,12 @@ export default function BankrollTrackerPage() {
   const { data, loading, getLatestRecord, saveData, getLatestDateWithData } =
     useBankData();
   const { toast } = useToast();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/auth/login");
+  };
 
   React.useEffect(() => {
     if (!loading) {
@@ -91,17 +98,23 @@ export default function BankrollTrackerPage() {
             Balance Tracker
           </h1>
         </div>
-        {view === "dashboard" ? (
-          <Button variant="outline" onClick={() => setView("trend")}>
-            <LineChart className="mr-2 h-4 w-4" />
-            View Trend
+        <div className="flex items-center gap-4">
+          {view === "dashboard" ? (
+            <Button variant="outline" onClick={() => setView("trend")}>
+              <LineChart className="mr-2 h-4 w-4" />
+              View Trend
+            </Button>
+          ) : (
+            <Button variant="outline" onClick={() => setView("dashboard")}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
+          )}
+          <Button variant="outline" onClick={handleLogout}>
+            <Power className="mr-2 h-4 w-4" />
+            Logout
           </Button>
-        ) : (
-          <Button variant="outline" onClick={() => setView("dashboard")}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
-          </Button>
-        )}
+        </div>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         {view === "dashboard" ? (
