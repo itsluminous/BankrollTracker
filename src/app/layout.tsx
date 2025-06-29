@@ -21,6 +21,10 @@ export default function RootLayout({
   const pathname = usePathname();
 
   useEffect(() => {
+    document.title = "Balance Tracker";
+  }, []);
+
+  useEffect(() => {
     if (!loading && !user && pathname !== '/auth/login') {
       router.push('/auth/login');
     }
