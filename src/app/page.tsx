@@ -11,19 +11,16 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-
 import { useBankData } from "@/hooks/use-bank-data";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useIsMobile } from "@/hooks/use-mobile";
-
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -31,33 +28,63 @@ import { Skeleton } from "@/components/ui/skeleton";
 import TrendGraph from "@/components/trend-graph";
 import DailyView from "@/components/daily-view";
 import DataEntryForm from "@/components/data-entry-form";
+import type { DailyRecord } from "@/lib/types";
+
+const NoDataView = ({ onAdd }: { onAdd: () => void }) => (
+  <div className="text-center py-8">
+    <p className="text-muted-foreground mb-4">No data recorded for this date.</p>
+    <Button onClick={onAdd}>Add Record</Button>
+  </div>
+);
 
 export default function BankrollTrackerPage() {
-  const [date, setDate] = React.useState<Date | undefined>();
-  const [view, setView] = React.useState<"dashboard" | "trend">("dashboard");
-  const [isEditing, setIsEditing] = React.useState(false);
   const [showCalendarOverlay, setShowCalendarOverlay] = React.useState(false);
-  const { data, loading, getLatestRecord, saveData, getLatestDateWithData } =
-    useBankData();
-  const { toast } = useToast();
+
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const isMobile = useIsMobile();
+
+  const { data, loading, saveData, getLatestDateWithData } = useBankData();
+  const { toast } = useToast();
+
+  const urlDateStr = searchParams.get("date");
+  const date = urlDateStr && isValid(parseISO(urlDateStr)) ? parseISO(urlDateStr) : undefined;
+  const view = searchParams.get("view") === "trend" ? "trend" : "dashboard";
+  const isEditing = searchParams.get("editing") === "true";
+
+  React.useEffect(() => {
+    if (loading || date) return;
+
+    const latestDate = getLatestDateWithData();
+    const initialDate = latestDate || new Date();
+    const initialDateStr = format(initialDate, 'yyyy-MM-dd');
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('date', initialDateStr);
+    router.replace(`${pathname}?${params.toString()}`);
+  }, [loading, date, getLatestDateWithData, pathname, router, searchParams]);
+
+  const setView = (newView: "dashboard" | "trend") => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("view", newView);
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const setIsEditing = (editing: boolean) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (editing) {
+      params.set("editing", "true");
+    } else {
+      params.delete("editing");
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/auth/login");
   };
-
-  React.useEffect(() => {
-    if (!loading) {
-      const latestDate = getLatestDateWithData();
-      setDate(latestDate || new Date());
-    }
-  }, [loading, getLatestDateWithData]);
-
-  React.useEffect(() => {
-    setIsEditing(false);
-  }, [date]);
 
   const datesWithData = React.useMemo(
     () =>
@@ -67,20 +94,28 @@ export default function BankrollTrackerPage() {
     [data]
   );
 
-  const modifiers = {
-    hasData: datesWithData,
-  };
-
-  const modifiersClassNames = {
-    hasData: "has-data",
-  };
+  const modifiers = { hasData: datesWithData };
+  const modifiersClassNames = { hasData: "has-data" };
 
   const selectedDateStr = date ? format(date, "yyyy-MM-dd") : "";
   const record = data[selectedDateStr];
+
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate && isValid(selectedDate)) {
-      setDate(selectedDate);
       setShowCalendarOverlay(false);
+      const newDateStr = format(selectedDate, "yyyy-MM-dd");
+      
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("date", newDateStr);
+
+      const recordExists = !!data[newDateStr];
+      if (!recordExists) {
+        params.set("editing", "true");
+      } else {
+        params.delete("editing");
+      }
+      
+      router.push(`${pathname}?${params.toString()}`);
     }
   };
 
@@ -90,6 +125,15 @@ export default function BankrollTrackerPage() {
       setIsEditing(false);
     }
   };
+
+  if (!date) {
+    return (
+      <div className="flex min-h-screen w-full flex-col bg-background p-4 md:p-8">
+        <Skeleton className="h-16 w-full mb-4" />
+        <Skeleton className="h-[400px] w-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -113,8 +157,8 @@ export default function BankrollTrackerPage() {
             </Button>
           )}
           <Button variant="outline" onClick={handleLogout}>
-            <Power className={isMobile ? "" : "mr-2"} />
-            {!isMobile && "Logout"}
+            <Power className={`h-4 w-4 ${isMobile ? '' : 'mr-2'}`} />
+            {!isMobile && <span>Logout</span>}
           </Button>
         </div>
       </header>
@@ -124,9 +168,15 @@ export default function BankrollTrackerPage() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  <Dialog open={showCalendarOverlay} onOpenChange={setShowCalendarOverlay}>
+                  <Dialog
+                    open={showCalendarOverlay}
+                    onOpenChange={setShowCalendarOverlay}
+                  >
                     <DialogTrigger asChild>
-                      <Button variant="ghost" className="text-xl font-semibold text-foreground p-0 h-auto underline text-blue-600">
+                      <Button
+                        variant="ghost"
+                        className="text-xl font-semibold text-foreground p-0 h-auto underline text-blue-600"
+                      >
                         {date ? format(date, "dd MMMM yyyy") : ""}
                       </Button>
                     </DialogTrigger>
@@ -157,16 +207,22 @@ export default function BankrollTrackerPage() {
                     <Skeleton className="h-20 w-full" />
                     <Skeleton className="h-20 w-full" />
                   </div>
-                ) : record && !isEditing ? (
-                  <DailyView key={selectedDateStr} record={record} onEdit={() => setIsEditing(true)} />
-                ) : (
+                ) : isEditing ? (
                   <DataEntryForm
                     key={selectedDateStr}
                     initialData={record}
                     onSave={handleSave}
-                    selectedDate={date || new Date()}
-                    onCancel={record ? () => setIsEditing(false) : undefined}
+                    selectedDate={date}
+                    onCancel={() => setIsEditing(false)}
                   />
+                ) : record ? (
+                  <DailyView
+                    key={selectedDateStr}
+                    record={record}
+                    onEdit={() => setIsEditing(true)}
+                  />
+                ) : (
+                  <NoDataView onAdd={() => setIsEditing(true)} />
                 )}
               </CardContent>
             </Card>
@@ -189,4 +245,3 @@ export default function BankrollTrackerPage() {
     </div>
   );
 }
-
