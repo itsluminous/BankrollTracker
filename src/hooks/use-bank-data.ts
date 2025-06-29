@@ -215,6 +215,15 @@ export function useBankData() {
         }
     }, [user]);
 
+    const getLatestDateWithData = useCallback(() => {
+        const dateStrings = Object.keys(data);
+        if (dateStrings.length === 0) {
+            return null;
+        }
+        dateStrings.sort((a, b) => b.localeCompare(a));
+        return parseISO(dateStrings[0]);
+    }, [data]);
+
     const importData = useCallback(async (newData: Record<string, DailyRecord>) => {
         if (!user) {
             console.error("User not authenticated. Cannot import data.");
@@ -277,5 +286,5 @@ export function useBankData() {
         }
     }, [user, fetchDailyRecords]);
 
-    return { data, loading: loading || authLoading, getLatestRecord, saveData, importData };
+    return { data, loading: loading || authLoading, getLatestRecord, saveData, importData, getLatestDateWithData };
 }

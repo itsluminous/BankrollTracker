@@ -31,13 +31,20 @@ import DailyView from "@/components/daily-view";
 import DataEntryForm from "@/components/data-entry-form";
 
 export default function BankrollTrackerPage() {
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [date, setDate] = React.useState<Date | undefined>();
   const [view, setView] = React.useState<"dashboard" | "trend">("dashboard");
   const [isEditing, setIsEditing] = React.useState(false);
   const [showCalendarOverlay, setShowCalendarOverlay] = React.useState(false);
-  const { data, loading, getLatestRecord, saveData } =
+  const { data, loading, getLatestRecord, saveData, getLatestDateWithData } =
     useBankData();
   const { toast } = useToast();
+
+  React.useEffect(() => {
+    if (!loading) {
+      const latestDate = getLatestDateWithData();
+      setDate(latestDate || new Date());
+    }
+  }, [loading, getLatestDateWithData]);
 
   React.useEffect(() => {
     setIsEditing(false);
