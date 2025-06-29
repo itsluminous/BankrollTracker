@@ -57,6 +57,36 @@ export default function LoginPage() {
     setLoading(false);
   };
 
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast({
+        title: 'Email Required',
+        description: 'Please enter your email address to reset your password.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/update-password`,
+    });
+
+    if (error) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } else {
+      toast({
+        title: 'Password Reset Email Sent',
+        description: 'Check your email for a link to reset your password.',
+      });
+    }
+    setLoading(false);
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <Card className="w-full max-w-md">
@@ -102,6 +132,14 @@ export default function LoginPage() {
               {loading ? 'Loading...' : 'Sign Up'}
             </Button>
           </form>
+          <Button
+            variant="link"
+            className="w-full mt-4"
+            onClick={handleForgotPassword}
+            disabled={loading}
+          >
+            Forgot Password?
+          </Button>
         </CardContent>
       </Card>
     </div>
