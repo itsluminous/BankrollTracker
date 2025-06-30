@@ -2,7 +2,7 @@
 
 Balance Tracker is a modern, responsive web application designed to help you effortlessly manage and visualize your financial data. Track your bank account balances and fixed deposits with an intuitive interface, get insights from a trend graph, and easily export your data.
 
-Live demo: [Balance Tracker](https://my-balance-tracker.vercel.app/)
+Live app: [Balance Tracker](https://my-balance-tracker.vercel.app/)
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/itsluminous/BankrollTracker&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
@@ -10,9 +10,8 @@ Live demo: [Balance Tracker](https://my-balance-tracker.vercel.app/)
 
 <p align="center">
   <img src="screenshots/mobile_login-portrait.png" alt="Login" width="200"/>
-  <img src="screenshots/mobile_no_data-portrait.png" alt="No Record" width="200"/>
-  <img src="screenshots/mobile_add_record-portrait.png" alt="Add Record" width="200"/>
   <img src="screenshots/mobile_dashboard_portrait.png" alt="Dashboard" width="200"/>
+  <img src="screenshots/mobile_add_record-portrait.png" alt="Add Record" width="200"/>
   <img src="screenshots/balance_trend-portrait.png" alt="Balance Trend" width="200"/>
 </p>
 <p align="center">
@@ -77,7 +76,6 @@ npm run typecheck
 -   **Calendar View**: A clean calendar interface to select dates and see which days have recorded data at a glance.
 -   **Trend Graph**: Visualize your total balance over time with a dynamic graph that automatically adjusts its granularity (daily, weekly, monthly) based on the available screen space.
 -   **Daily View Layout**: A detailed daily view that displays account and Fixed Deposit (FD) details in collapsible, easy-to-read sections.
--   **Data Export & Import**: Easily export your entire dataset to a JSON file for backup, and import it back whenever needed. There is also a "Copy" button that formats your daily balance details for easy sharing.
 -   **Data Entry Form**: An intuitive form for entering your financial data. It comes pre-filled with the previous day's data to speed up entry and includes validation for matured FDs.
 -   **Responsive Design**: A clean and modern UI that works seamlessly on both desktop and mobile devices.
 
