@@ -14,6 +14,7 @@ import {
 import { useBankData } from "@/hooks/use-bank-data";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
@@ -109,9 +110,7 @@ export default function BankrollTrackerClient() {
       params.set("date", newDateStr);
 
       const recordExists = !!data[newDateStr];
-      if (!recordExists) {
-        params.set("editing", "true");
-      } else {
+      if (recordExists) {
         params.delete("editing");
       }
       
@@ -138,12 +137,12 @@ export default function BankrollTrackerClient() {
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 cursor-pointer">
           <Wallet className="h-6 w-6 text-primary" />
           <h1 className="text-xl font-semibold text-foreground">
             Balance Tracker
           </h1>
-        </div>
+        </Link>
         <div className="flex items-center gap-4">
           {view === "dashboard" ? (
             <Button variant="outline" onClick={() => setView("trend")}>
