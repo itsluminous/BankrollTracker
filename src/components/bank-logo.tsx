@@ -1,4 +1,8 @@
-import { HdfcLogo, SbiLogo, PnbLogo, IciciLogo, OthersLogo } from "@/components/logos";
+import { HdfcLogo } from './logos/HdfcLogo';
+import { SbiLogo } from './logos/SbiLogo';
+import { PnbLogo } from './logos/PnbLogo';
+import { IciciLogo } from './logos/IciciLogo';
+import { OthersLogo } from './logos/OthersLogo';
 
 const bankLogoComponents: Record<string, React.FC<React.SVGProps<SVGSVGElement>>> = {
   'HDFC': HdfcLogo,

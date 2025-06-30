@@ -185,7 +185,7 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
                       />
                     </div>
                   </div>
-                  <Button type="button" variant="ghost" size="icon" onClick={() => remove(accountIndex)}>
+                  <Button type="button" variant="ghost" size="icon" onClick={() => remove(accountIndex)} data-testid={`delete-account-${accountIndex}`}>
                       <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
               </CardHeader>

@@ -1,5 +1,5 @@
 export const HdfcLogo = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1448 1448" {...props}>
+    <svg data-testid="hdfc-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1448 1448" {...props}>
       <g fill="none" stroke="#808fbc" strokeWidth="2">
       </g>
       <path fill="#fe0000" d="M360.25 233.37v308.01a.37.37 0 0 1-.37.37H203.37a.37.37 0 0 1-.37-.37V76.12a.37.37 0 0 1 .37-.37h469.51a.37.37 0 0 1 .37.37v156.51a.37.37 0 0 1-.37.37H360.62a.37.37 0 0 0-.37.37Zm725.5 307.76V233.61a.62.62 0 0 0-.62-.62l-312.01.01a.62.62 0 0 1-.62-.62V76.37a.62.62 0 0 1 .62-.62h469.26a.62.62 0 0 1 .62.62v464.76a.62.62 0 0 1-.62.62h-156.01a.62.62 0 0 1-.62-.62Z"/>

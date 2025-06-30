@@ -1,5 +1,5 @@
 export const OthersLogo = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xmlSpace="preserve" {...props}>
+    <svg data-testid="others-logo" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xmlSpace="preserve" {...props}>
       <circle style={{fill: '#88C5CC'}} cx="256" cy="256" r="256"/>
       <rect x="124" y="200" style={{fill: '#406A80'}} width="264" height="232"/>
       <rect x="108" y="216" style={{fill: '#E6E6E6'}} width="64" height="200"/>

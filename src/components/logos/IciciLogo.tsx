@@ -1,5 +1,5 @@
 export const IciciLogo = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1388 1505" {...props}>
+    <svg data-testid="icici-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1388 1505" {...props}>
       <g fill="none" strokeWidth="2">
         <path stroke="#cf4628" d="M1062.01 1.48q-17.54.4-35.08.57-10.79.11-19.97.78c-129.02 9.53-250.27 61.24-360.38 126.26-33.45 19.75-63.06 44.15-94.62 71.89-28.7 25.22-47 41.93-68.87 64.86-109.33 114.68-200.05 248.21-258.67 395.88-35.48 89.37-58.83 185.66-57.25 282.34 1.07 65.74 14.56 129.29 47.43 185.83 47.79 82.2 136.55 127.75 229.17 135.56q24.48 2.06 50.98 1.84" vectorEffect="non-scaling-stroke"/>
         <path stroke="#f8b190" d="M494.75 1267.29c-17.59 46.76-37.75 91.95-63.82 134.66-19.2 31.45-44.73 64.12-76.72 82.76-13.68 7.97-30.71 13.74-46.7 13.56q-.71-.01-1.76.69" vectorEffect="non-scaling-stroke"/>
