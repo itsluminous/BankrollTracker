@@ -2,7 +2,23 @@
 
 Balance Tracker is a modern, responsive web application designed to help you effortlessly manage and visualize your financial data. Track your bank account balances and fixed deposits with an intuitive interface, get insights from a trend graph, and easily export your data.
 
+Live demo: [Balance Tracker](https://my-balance-tracker.vercel.app/)
+
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/itsluminous/BankrollTracker&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY)
+
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/mobile_login-portrait.png" alt="Login" width="200"/>
+  <img src="screenshots/mobile_no_data-portrait.png" alt="No Record" width="200"/>
+  <img src="screenshots/mobile_add_record-portrait.png" alt="Add Record" width="200"/>
+  <img src="screenshots/mobile_dashboard_portrait.png" alt="Dashboard" width="200"/>
+  <img src="screenshots/balance_trend-portrait.png" alt="Balance Trend" width="200"/>
+</p>
+<p align="center">
+  <img src="screenshots/mobile_dashboard_landscape.png" alt="Dashboard Landscape" width="400"/>
+  <img src="screenshots/balance_trend1-landscape.png" alt="Balance Trend Landscape" width="400"/>
+</p>
 
 ## Supabase Setup
 
@@ -39,6 +55,23 @@ npm run dev
 ```
 Open the local URL provided in the output (e.g., `http://localhost:3000`) in your browser to see the application.
 
+## Testing
+
+This project uses [Jest](https://jestjs.io/) and [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) for component testing. To run the tests, use the following command:
+
+```bash
+npm run test
+```
+
+## Linting and Type Checking
+
+This project uses [ESLint](https://eslint.org/) for linting and [TypeScript](https://www.typescriptlang.org/) for type checking. To run the linter and type checker, use the following commands:
+
+```bash
+npm run lint
+npm run typecheck
+```
+
 ## Core Features
 
 -   **Calendar View**: A clean calendar interface to select dates and see which days have recorded data at a glance.
@@ -55,3 +88,4 @@ Open the local URL provided in the output (e.g., `http://localhost:3000`) in you
 -   **Charts**: [Recharts](https://recharts.org/)
 -   **State Management**: React Hooks
 -   **Data Storage**: [Supabase](https://supabase.com/) (PostgreSQL database with authentication and real-time capabilities).
+-   **Testing**: [Jest](https://jestjs.io/), [React Testing Library](https://testing-library.com/)
