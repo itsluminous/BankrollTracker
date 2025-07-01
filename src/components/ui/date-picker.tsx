@@ -18,9 +18,10 @@ interface DatePickerProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  id?: string;
 }
 
-export function DatePicker({ value, onChange, placeholder }: DatePickerProps) {
+export function DatePicker({ value, onChange, placeholder, id }: DatePickerProps) {
   const [open, setOpen] = React.useState(false)
 
   const parsedDate = parse(value, "yyyy-MM-dd", new Date());
@@ -41,6 +42,7 @@ export function DatePicker({ value, onChange, placeholder }: DatePickerProps) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onFocus={() => setOpen(false)}
+        id={id}
       />
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>

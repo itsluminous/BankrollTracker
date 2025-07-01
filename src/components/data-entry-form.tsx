@@ -169,7 +169,11 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
                             <FormItem>
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
-                                  <SelectTrigger className="text-sm border-0 shadow-none p-0 h-auto bg-transparent focus-visible:ring-0 w-auto min-w-[100px] gap-1">
+                                  <SelectTrigger
+                                    id={field.name}
+                                    name={field.name}
+                                    className="text-sm border-0 shadow-none p-0 h-auto bg-transparent focus-visible:ring-0 w-auto min-w-[100px] gap-1"
+                                  >
                                     <SelectValue placeholder="Select Bank" />
                                   </SelectTrigger>
                                 </FormControl>
@@ -205,9 +209,9 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
                     name={`accounts.${accountIndex}.balance`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Account Balance</FormLabel>
+                        <FormLabel htmlFor={`accounts.${accountIndex}.balance`}>Account Balance</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="0.00" {...field} />
+                          <Input type="number" placeholder="0.00" {...field} id={`accounts.${accountIndex}.balance`} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -275,9 +279,9 @@ function FDFormArray({ accountIndex, form, control, selectedDate }: { accountInd
                   name={`accounts.${accountIndex}.fds.${fdIndex}.principal`}
                   render={({ field }) => (
                     <FormItem className="flex-grow">
-                      <FormLabel>Principal</FormLabel>
+                      <FormLabel htmlFor={`accounts.${accountIndex}.fds.${fdIndex}.principal`}>Principal</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="Principal Amount" {...field} />
+                        <Input type="number" placeholder="Principal Amount" {...field} id={`accounts.${accountIndex}.fds.${fdIndex}.principal`} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -288,12 +292,13 @@ function FDFormArray({ accountIndex, form, control, selectedDate }: { accountInd
                   name={`accounts.${accountIndex}.fds.${fdIndex}.maturityDate`}
                   render={({ field }) => (
                     <FormItem className="flex-grow">
-                      <FormLabel>Maturity Date</FormLabel>
+                      <FormLabel htmlFor={`accounts.${accountIndex}.fds.${fdIndex}.maturityDate`}>Maturity Date</FormLabel>
                       <FormControl>
                         <DatePicker
                           value={field.value}
                           onChange={field.onChange}
                           placeholder="yyyy-mm-dd"
+                          id={`accounts.${accountIndex}.fds.${fdIndex}.maturityDate`}
                         />
                       </FormControl>
                       <FormMessage />
