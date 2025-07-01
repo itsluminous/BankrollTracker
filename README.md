@@ -59,7 +59,7 @@ Open the local URL provided in the output (e.g., `http://localhost:3000`) in you
 This project uses [Jest](https://jestjs.io/) and [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) for component testing. To run the tests, use the following command:
 
 ```bash
-npm run test
+npm run test -- --coverage
 ```
 
 ## Linting and Type Checking
