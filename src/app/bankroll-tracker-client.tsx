@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { format, isValid, parseISO } from "date-fns";
-import { ArrowLeft, LineChart, Power, Wallet } from "lucide-react";
+import { Home, LineChart, Power, Wallet } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -147,12 +147,12 @@ export default function BankrollTrackerClient() {
           {view === "dashboard" ? (
             <Button variant="outline" onClick={() => setView("trend")}>
               <LineChart className="mr-2 h-4 w-4" />
-              {isMobile ? "Trend" : "View Trend"}
+              {!isMobile && <span>Trend</span>}
             </Button>
           ) : (
             <Button variant="outline" onClick={() => setView("dashboard")}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              {isMobile ? "Dashboard" : "Back to Dashboard"}
+              <Home className="mr-2 h-4 w-4" />
+              {!isMobile && <span>Dashboard</span>}
             </Button>
           )}
           <Button variant="outline" onClick={handleLogout}>
