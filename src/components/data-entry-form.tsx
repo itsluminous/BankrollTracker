@@ -4,7 +4,7 @@ import * as React from "react"
 import { useForm, useFieldArray, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { format, isBefore, parseISO } from "date-fns"
+import { format, isBefore, parse, isValid } from "date-fns"
 import { PlusCircle, Trash2, Save, AlertTriangle } from "lucide-react"
 
 import type { DailyRecord, Account, FixedDeposit } from "@/lib/types"
@@ -41,6 +41,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip"
+import { DatePicker } from "./ui/date-picker";
 
 interface DataEntryFormProps {
   initialData: DailyRecord | null;
@@ -52,8 +53,15 @@ interface DataEntryFormProps {
 const fdSchema = z.object({
   id: z.string(),
   principal: z.coerce.number().min(0, "Principal must be positive"),
-  maturityDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "Invalid date",
+  maturityDate: z.string().refine((val) => {
+    try {
+      const date = parse(val, "yyyy-MM-dd", new Date());
+      return isValid(date);
+    } catch {
+      return false;
+    }
+  }, {
+    message: "Invalid date format. Use yyyy-mm-dd.",
   }),
 });
 
@@ -95,6 +103,7 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
+        mode: "onBlur",
         defaultValues: {
             accounts: initialData?.accounts 
                 ? JSON.parse(JSON.stringify(initialData.accounts)) 
@@ -206,7 +215,7 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
                   />
 
                   <Separator />
-                  <FDFormArray accountIndex={accountIndex} control={form.control} selectedDate={selectedDate}/>
+                  <FDFormArray accountIndex={accountIndex} form={form} control={form.control} selectedDate={selectedDate}/>
               </CardContent>
             </Card>
           ))}
@@ -233,7 +242,7 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
 }
 
 
-function FDFormArray({ accountIndex, control, selectedDate }: { accountIndex: number; control: any; selectedDate: Date }) {
+function FDFormArray({ accountIndex, form, control, selectedDate }: { accountIndex: number; form: any; control: any; selectedDate: Date }) {
     const { fields, append, remove } = useFieldArray({
       control,
       name: `accounts.${accountIndex}.fds`
@@ -251,9 +260,16 @@ function FDFormArray({ accountIndex, control, selectedDate }: { accountIndex: nu
         <div className="space-y-2">
           {fields.map((fd, fdIndex) => {
             const maturityValue = fds?.[fdIndex]?.maturityDate;
-            const isMatured = maturityValue && isBefore(parseISO(maturityValue), selectedDate);
+            const parsedDate = maturityValue ? parse(maturityValue, "yyyy-MM-dd", new Date()) : null;
+            const isDateValid = parsedDate && isValid(parsedDate);
+            const isDateInvalid = !isDateValid
+            const isMatured = isDateValid && isBefore(parsedDate, selectedDate);
+
             return (
-              <div key={fd.id} className={cn("flex items-end gap-2 p-2 rounded-md", isMatured ? "bg-destructive/10 border border-destructive/20" : "bg-muted/50")}>
+              <div key={fd.id} className={cn("flex items-end gap-2 p-2 rounded-md", 
+                  isMatured ? "bg-destructive/10 border border-destructive/20" : "bg-muted/50",
+                  isDateInvalid && "bg-destructive/10 border border-destructive/20"
+              )}>
                 <FormField
                   control={control}
                   name={`accounts.${accountIndex}.fds.${fdIndex}.principal`}
@@ -274,20 +290,28 @@ function FDFormArray({ accountIndex, control, selectedDate }: { accountIndex: nu
                     <FormItem className="flex-grow">
                       <FormLabel>Maturity Date</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <DatePicker
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="yyyy-mm-dd"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                 {isMatured && (
+                 {(isMatured || isDateInvalid) && (
                    <TooltipProvider>
                      <Tooltip>
                        <TooltipTrigger asChild>
                          <AlertTriangle className="h-5 w-5 text-destructive mb-2.5" />
                        </TooltipTrigger>
                        <TooltipContent>
-                         <p>This FD has matured. Please update or remove it.</p>
+                         {isMatured ? (
+                           <p>This FD has matured. Please update or remove it.</p>
+                         ) : (
+                           <p>Invalid date format. Please use YYYY-MM-DD.</p>
+                         )}
                        </TooltipContent>
                      </Tooltip>
                    </TooltipProvider>
