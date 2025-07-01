@@ -1,6 +1,6 @@
 # Balance Tracker
 
-Balance Tracker is a modern, responsive web application designed to help you effortlessly manage and visualize your financial data. Track your bank account balances and fixed deposits with an intuitive interface, get insights from a trend graph, and easily export your data.
+Balance Tracker is a modern, responsive web application designed to help you effortlessly manage and visualize your financial data. Track your bank account balances and fixed deposits with an intuitive interface and get insights from a trend graph.
 
 Live app: [Balance Tracker](https://my-balance-tracker.vercel.app/)
 
