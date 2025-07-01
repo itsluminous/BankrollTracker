@@ -23,16 +23,30 @@ interface DatePickerProps {
 
 export function DatePicker({ value, onChange, placeholder, id }: DatePickerProps) {
   const [open, setOpen] = React.useState(false)
+  
+  const selectedDate = React.useMemo(() => {
+    if (!value) return undefined;
+    const parsed = parse(value, "yyyy-MM-dd", new Date());
+    return isValid(parsed) ? parsed : undefined;
+  }, [value]);
 
-  const parsedDate = parse(value, "yyyy-MM-dd", new Date());
-  const selectedDate = isValid(parsedDate) ? parsedDate : undefined;
+  const [displayMonth, setDisplayMonth] = React.useState<Date>(selectedDate || new Date());
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
       onChange(format(date, "yyyy-MM-dd"))
+      setDisplayMonth(date);
     }
     setOpen(false)
   }
+
+  React.useEffect(() => {
+    if (open && selectedDate) {
+      setDisplayMonth(selectedDate);
+    } else if (open) {
+      setDisplayMonth(new Date());
+    }
+  }, [open, selectedDate]);
 
   return (
     <div className="relative">
@@ -62,7 +76,8 @@ export function DatePicker({ value, onChange, placeholder, id }: DatePickerProps
             mode="single"
             selected={selectedDate}
             onSelect={handleDateSelect}
-            month={selectedDate}
+            month={displayMonth}
+            onMonthChange={setDisplayMonth}
             initialFocus
           />
         </PopoverContent>
