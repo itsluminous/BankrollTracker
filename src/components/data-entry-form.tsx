@@ -42,6 +42,8 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip"
 import { DatePicker } from "./ui/date-picker";
+import { useTranslation } from "react-i18next"
+import { useBankData } from "@/hooks/use-bank-data";
 
 interface DataEntryFormProps {
   initialData: DailyRecord | null;
@@ -50,9 +52,9 @@ interface DataEntryFormProps {
   onCancel?: () => void;
 }
 
-const fdSchema = z.object({
+const fdSchema = (t: any) => z.object({
   id: z.string(),
-  principal: z.coerce.number().min(0, "Principal must be positive"),
+  principal: z.coerce.number().min(0, t('dataEntry.principalMin')),
   maturityDate: z.string().refine((val) => {
     try {
       const date = parse(val, "yyyy-MM-dd", new Date());
@@ -61,27 +63,26 @@ const fdSchema = z.object({
       return false;
     }
   }, {
-    message: "Invalid date format. Use yyyy-mm-dd.",
+    message: t('dataEntry.invalidDate'),
   }),
 });
 
-const accountSchema = z.object({
+const accountSchema = (t: any) => z.object({
   id: z.string(),
-  holderName: z.string().min(1, "Holder name is required"),
-  bankName: z.string().min(1, "Bank name is required"),
-  accountNumber: z.string().min(1, "Account number is required"),
-  balance: z.coerce.number().min(0, "Balance must be positive"),
-  fds: z.array(fdSchema),
+  holderName: z.string().min(1, t('dataEntry.holderNameRequired')),
+  bankName: z.string().min(1, t('dataEntry.bankNameRequired')),
+  accountNumber: z.string().min(1, t('dataEntry.accountNumberRequired')),
+  balance: z.coerce.number().min(0, t('dataEntry.balanceMin')),
+  fds: z.array(fdSchema(t)),
 });
 
-const formSchema = z.object({
-  accounts: z.array(accountSchema),
+const formSchema = (t: any) => z.object({
+  accounts: z.array(accountSchema(t)),
 });
 
-
-import { useBankData } from "@/hooks/use-bank-data";
 
 export default function DataEntryForm({ initialData, onSave, selectedDate, onCancel }: DataEntryFormProps) {
+    const { t } = useTranslation();
     const { toast } = useToast();
     const { getLatestRecord } = useBankData();
     const [prefillLoading, setPrefillLoading] = React.useState(true);
@@ -101,8 +102,8 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
         fetchPrefillData();
     }, [selectedDate, initialData, getLatestRecord]);
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<z.infer<ReturnType<typeof formSchema>>>({
+        resolver: zodResolver(formSchema(t)),
         mode: "onBlur",
         defaultValues: {
             accounts: initialData?.accounts 
@@ -129,11 +130,11 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
         name: "accounts",
     });
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
+    const onSubmit = (values: z.infer<ReturnType<typeof formSchema>>) => {
         onSave(values);
         toast({
-            title: "Data Saved!",
-            description: `Balance information for ${format(selectedDate, "PPP")} has been saved.`,
+            title: t('dataEntry.dataSaved'),
+            description: t('dataEntry.dataSavedDesc', { date: format(selectedDate, "PPP") }),
             className: "bg-accent text-accent-foreground",
         });
     };
@@ -141,7 +142,7 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
   if (prefillLoading) {
     return (
       <div className="flex items-center justify-center h-48">
-        <p className="text-muted-foreground">Loading previous data...</p>
+        <p className="text-muted-foreground">{t('dataEntry.loadingPrevious')}</p>
       </div>
     );
   }
@@ -158,7 +159,7 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
                       control={form.control}
                       name={`accounts.${accountIndex}.holderName`}
                       render={({ field }) => (
-                        <Input {...field} placeholder="Account Holder" className="text-lg font-semibold border-0 shadow-none p-0 h-auto bg-transparent focus-visible:ring-0" />
+                        <Input {...field} placeholder={t('dataEntry.accountHolder')} className="text-lg font-semibold border-0 shadow-none p-0 h-auto bg-transparent focus-visible:ring-0" />
                       )}
                     />
                     <div className="flex gap-4 items-center">
@@ -174,7 +175,7 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
                                     name={field.name}
                                     className="text-sm border-0 shadow-none p-0 h-auto bg-transparent focus-visible:ring-0 w-auto min-w-[100px] gap-1"
                                   >
-                                    <SelectValue placeholder="Select Bank" />
+                                    <SelectValue placeholder={t('dataEntry.selectBank')} />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -193,7 +194,7 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
                           control={form.control}
                           name={`accounts.${accountIndex}.accountNumber`}
                           render={({ field }) => (
-                              <Input {...field} placeholder="Account Number" className="text-sm border-0 shadow-none p-0 h-auto bg-transparent focus-visible:ring-0 font-mono" />
+                              <Input {...field} placeholder={t('dataEntry.accountNumber')} className="text-sm border-0 shadow-none p-0 h-auto bg-transparent focus-visible:ring-0 font-mono" />
                           )}
                       />
                     </div>
@@ -209,7 +210,7 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
                     name={`accounts.${accountIndex}.balance`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel htmlFor={`accounts.${accountIndex}.balance`}>Account Balance</FormLabel>
+                        <FormLabel htmlFor={`accounts.${accountIndex}.balance`}>{t('dataEntry.accountBalance')}</FormLabel>
                         <FormControl>
                           <Input type="number" placeholder="0.00" {...field} id={`accounts.${accountIndex}.balance`} />
                         </FormControl>
@@ -227,16 +228,16 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
         
         <div className="flex justify-between items-center">
             <Button type="button" variant="outline" onClick={() => append({ id: `new_${Date.now()}`, holderName: '', bankName: '', accountNumber: '', balance: 0, fds: [] })}>
-                <PlusCircle className="mr-2 h-4 w-4" /> Add Account
+                <PlusCircle className="mr-2 h-4 w-4" /> {t('dataEntry.addAccount')}
             </Button>
             <div className="flex items-center gap-2">
               {onCancel && (
                 <Button type="button" variant="ghost" onClick={onCancel}>
-                  Cancel
+                  {t('dataEntry.cancel')}
                 </Button>
               )}
               <Button type="submit">
-                  <Save className="mr-2 h-4 w-4" /> Save Data
+                  <Save className="mr-2 h-4 w-4" /> {t('dataEntry.saveData')}
               </Button>
             </div>
         </div>
@@ -247,6 +248,7 @@ export default function DataEntryForm({ initialData, onSave, selectedDate, onCan
 
 
 function FDFormArray({ accountIndex, form, control, selectedDate }: { accountIndex: number; form: any; control: any; selectedDate: Date }) {
+    const { t } = useTranslation();
     const { fields, append, remove } = useFieldArray({
       control,
       name: `accounts.${accountIndex}.fds`
@@ -259,8 +261,8 @@ function FDFormArray({ accountIndex, form, control, selectedDate }: { accountInd
 
     return (
       <div className="space-y-4">
-        <h4 className="font-medium">Fixed Deposits</h4>
-        {fields.length === 0 && <p className="text-sm text-muted-foreground">No fixed deposits for this account.</p>}
+        <h4 className="font-medium">{t('dataEntry.fixedDeposits')}</h4>
+        {fields.length === 0 && <p className="text-sm text-muted-foreground">{t('dataEntry.noFixedDeposits')}</p>}
         <div className="space-y-2">
           {fields.map((fd, fdIndex) => {
             const maturityValue = fds?.[fdIndex]?.maturityDate;
@@ -279,9 +281,9 @@ function FDFormArray({ accountIndex, form, control, selectedDate }: { accountInd
                   name={`accounts.${accountIndex}.fds.${fdIndex}.principal`}
                   render={({ field }) => (
                     <FormItem className="flex-grow">
-                      <FormLabel htmlFor={`accounts.${accountIndex}.fds.${fdIndex}.principal`}>Principal</FormLabel>
+                      <FormLabel htmlFor={`accounts.${accountIndex}.fds.${fdIndex}.principal`}>{t('dataEntry.principal')}</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="Principal Amount" {...field} id={`accounts.${accountIndex}.fds.${fdIndex}.principal`} />
+                        <Input type="number" placeholder={t('dataEntry.principalAmount')} {...field} id={`accounts.${accountIndex}.fds.${fdIndex}.principal`} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -292,7 +294,7 @@ function FDFormArray({ accountIndex, form, control, selectedDate }: { accountInd
                   name={`accounts.${accountIndex}.fds.${fdIndex}.maturityDate`}
                   render={({ field }) => (
                     <FormItem className="flex-grow">
-                      <FormLabel htmlFor={`accounts.${accountIndex}.fds.${fdIndex}.maturityDate`}>Maturity Date</FormLabel>
+                      <FormLabel htmlFor={`accounts.${accountIndex}.fds.${fdIndex}.maturityDate`}>{t('dataEntry.maturityDate')}</FormLabel>
                       <FormControl>
                         <DatePicker
                           value={field.value}
@@ -313,9 +315,9 @@ function FDFormArray({ accountIndex, form, control, selectedDate }: { accountInd
                        </TooltipTrigger>
                        <TooltipContent>
                          {isMatured ? (
-                           <p>This FD has matured. Please update or remove it.</p>
+                           <p>{t('dataEntry.fdMatured')}</p>
                          ) : (
-                           <p>Invalid date format. Please use YYYY-MM-DD.</p>
+                           <p>{t('dataEntry.invalidDateFormat')}</p>
                          )}
                        </TooltipContent>
                      </Tooltip>
@@ -334,7 +336,7 @@ function FDFormArray({ accountIndex, form, control, selectedDate }: { accountInd
           size="sm"
           onClick={() => append({ id: `new_fd_${Date.now()}`, principal: 0, maturityDate: format(new Date(), 'yyyy-MM-dd') })}
         >
-          <PlusCircle className="mr-2 h-4 w-4" /> Add FD
+          <PlusCircle className="mr-2 h-4 w-4" /> {t('dataEntry.addFd')}
         </Button>
       </div>
     );

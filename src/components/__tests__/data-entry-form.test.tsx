@@ -69,7 +69,7 @@ describe('DataEntryForm', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Add Account')).toBeInTheDocument();
+      expect(screen.getByText('dataEntry.addAccount')).toBeInTheDocument();
     });
 
     expect(screen.getByDisplayValue('John Doe')).toBeInTheDocument();
@@ -87,13 +87,13 @@ describe('DataEntryForm', () => {
     );
 
     await waitFor(() => {
-        expect(screen.getByText('Add Account')).toBeInTheDocument();
+        expect(screen.getByText('dataEntry.addAccount')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Add Account'));
+    fireEvent.click(screen.getByText('dataEntry.addAccount'));
 
     await waitFor(() => {
-        expect(screen.getAllByPlaceholderText('Account Holder').length).toBe(1);
+        expect(screen.getAllByPlaceholderText('dataEntry.accountHolder').length).toBe(1);
     })
   });
 
@@ -108,7 +108,7 @@ describe('DataEntryForm', () => {
     );
 
     await waitFor(() => {
-        expect(screen.getByText('Add Account')).toBeInTheDocument();
+        expect(screen.getByText('dataEntry.addAccount')).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByTestId('delete-account-0'));
@@ -129,13 +129,13 @@ describe('DataEntryForm', () => {
     );
 
     await waitFor(() => {
-        expect(screen.getByText('Add Account')).toBeInTheDocument();
+        expect(screen.getByText('dataEntry.addAccount')).toBeInTheDocument();
     });
 
     fireEvent.change(screen.getByDisplayValue('John Doe'), {
       target: { value: 'Jane Doe' },
     });
-    fireEvent.click(screen.getByText('Save Data'));
+    fireEvent.click(screen.getByText('dataEntry.saveData'));
 
     await waitFor(() => {
       expect(onSave).toHaveBeenCalledWith({
@@ -160,14 +160,14 @@ describe('DataEntryForm', () => {
     );
 
     await waitFor(() => {
-        expect(screen.getByText('Add Account')).toBeInTheDocument();
+        expect(screen.getByText('dataEntry.addAccount')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Add FD'));
+    fireEvent.click(screen.getByText('dataEntry.addFd'));
 
     await waitFor(() => {
-        expect(screen.getAllByLabelText('Principal').length).toBe(1);
-        expect(screen.getAllByLabelText('Maturity Date').length).toBe(1);
+        expect(screen.getAllByLabelText('dataEntry.principal').length).toBe(1);
+        expect(screen.getAllByLabelText('dataEntry.maturityDate').length).toBe(1);
     })
   });
 });

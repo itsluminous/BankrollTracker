@@ -1,0 +1,73 @@
+{
+  "login": {
+    "title": "Login / Sign Up",
+    "description": "Enter your email below to login or create an account.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "m@example.com",
+    "passwordLabel": "Password",
+    "loginButton": "Login",
+    "signUpButton": "Sign Up",
+    "forgotPasswordButton": "Forgot Password?",
+    "loading": "Loading...",
+    "loginErrorTitle": "Login Error",
+    "signupErrorTitle": "Signup Error",
+    "signupSuccessTitle": "Signup Successful",
+    "signupSuccessDescription": "Please check your email to confirm your account.",
+    "emailRequiredTitle": "Email Required",
+    "emailRequiredDescription": "Please enter your email address to reset your password.",
+    "passwordResetTitle": "Password Reset Email Sent",
+    "passwordResetDescription": "Check your email for a link to reset your password.",
+    "errorTitle": "Error"
+  },
+  "bankroll": {
+    "noData": "No data recorded for this date.",
+    "addRecord": "Add Record",
+    "balanceTracker": "Balance Tracker",
+    "trend": "Trend",
+    "dashboard": "Dashboard",
+    "logout": "Logout",
+    "selectDate": "Select Date",
+    "viewOrEnterData": "View or enter balance data.",
+    "balanceTrend": "Balance Trend"
+  },
+  "dataEntry": {
+    "principalMin": "Principal must be positive",
+    "invalidDate": "Invalid date format. Use yyyy-mm-dd.",
+    "holderNameRequired": "Holder name is required",
+    "bankNameRequired": "Bank name is required",
+    "accountNumberRequired": "Account number is required",
+    "balanceMin": "Balance must be positive",
+    "dataSaved": "Data Saved!",
+    "dataSavedDesc": "Balance information for {{date}} has been saved.",
+    "loadingPrevious": "Loading previous data...",
+    "accountHolder": "Account Holder",
+    "selectBank": "Select Bank",
+    "accountNumber": "Account Number",
+    "accountBalance": "Account Balance",
+    "fixedDeposits": "Fixed Deposits",
+    "noFixedDeposits": "No fixed deposits for this account.",
+    "principal": "Principal",
+    "principalAmount": "Principal Amount",
+    "maturityDate": "Maturity Date",
+    "fdMatured": "This FD has matured. Please update or remove it.",
+    "invalidDateFormat": "Invalid date format. Please use YYYY-MM-DD.",
+    "addAccount": "Add Account",
+    "cancel": "Cancel",
+    "saveData": "Save Data",
+    "addFd": "Add FD"
+  },
+  "dailyView": {
+    "totalBalance": "Total Balance",
+    "edit": "Edit",
+    "copy": "Copy",
+    "copied": "Copied to clipboard!",
+    "copiedDesc": "You can now paste the balance details in WhatsApp.",
+    "balance": "Balance",
+    "deposits": "Deposits",
+    "fdMaturityDetails": "FD Maturity Details",
+    "fdMatured": "This FD has matured."
+  },
+  "footer": {
+    "repository": "Source"
+  }
+}

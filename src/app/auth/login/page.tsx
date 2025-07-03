@@ -8,8 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,7 +25,7 @@ export default function LoginPage() {
 
     if (error) {
       toast({
-        title: 'Login Error',
+        title: t('login.loginErrorTitle'),
         description: error.message,
         variant: 'destructive',
       });
@@ -40,14 +42,14 @@ export default function LoginPage() {
 
     if (error) {
       toast({
-        title: 'Signup Error',
+        title: t('login.signupErrorTitle'),
         description: error.message,
         variant: 'destructive',
       });
     } else {
       toast({
-        title: 'Signup Successful',
-        description: 'Please check your email to confirm your account.',
+        title: t('login.signupSuccessTitle'),
+        description: t('login.signupSuccessDescription'),
       });
     }
     setLoading(false);
@@ -56,8 +58,8 @@ export default function LoginPage() {
   const handleForgotPassword = async () => {
     if (!email) {
       toast({
-        title: 'Email Required',
-        description: 'Please enter your email address to reset your password.',
+        title: t('login.emailRequiredTitle'),
+        description: t('login.emailRequiredDescription'),
         variant: 'destructive',
       });
       return;
@@ -70,14 +72,14 @@ export default function LoginPage() {
 
     if (error) {
       toast({
-        title: 'Error',
+        title: t('login.errorTitle'),
         description: error.message,
         variant: 'destructive',
       });
     } else {
       toast({
-        title: 'Password Reset Email Sent',
-        description: 'Check your email for a link to reset your password.',
+        title: t('login.passwordResetTitle'),
+        description: t('login.passwordResetDescription'),
       });
     }
     setLoading(false);
@@ -87,26 +89,26 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl">Login / Sign Up</CardTitle>
+          <CardTitle className="text-2xl">{t('login.title')}</CardTitle>
           <CardDescription>
-            Enter your email below to login or create an account.
+            {t('login.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('login.emailLabel')}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder={t('login.emailPlaceholder')}
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('login.passwordLabel')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -116,7 +118,7 @@ export default function LoginPage() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Loading...' : 'Login'}
+              {loading ? t('login.loading') : t('login.loginButton')}
             </Button>
             <Button
               type="button"
@@ -125,7 +127,7 @@ export default function LoginPage() {
               onClick={handleSignUp}
               disabled={loading}
             >
-              {loading ? 'Loading...' : 'Sign Up'}
+              {loading ? t('login.loading') : t('login.signUpButton')}
             </Button>
           </form>
           <Button
@@ -134,7 +136,7 @@ export default function LoginPage() {
             onClick={handleForgotPassword}
             disabled={loading}
           >
-            Forgot Password?
+            {t('login.forgotPasswordButton')}
           </Button>
         </CardContent>
       </Card>

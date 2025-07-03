@@ -18,6 +18,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { BankLogo } from "@/components/bank-logo"
+import { useTranslation } from "react-i18next"
 
 interface DailyViewProps {
   record: DailyRecord;
@@ -25,6 +26,7 @@ interface DailyViewProps {
 }
 
 export default function DailyView({ record, onEdit }: DailyViewProps) {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
@@ -56,8 +58,8 @@ export default function DailyView({ record, onEdit }: DailyViewProps) {
     
     navigator.clipboard.writeText(text.trim());
     toast({
-      title: "Copied to clipboard!",
-      description: "You can now paste the balance details in WhatsApp.",
+      title: t('dailyView.copied'),
+      description: t('dailyView.copiedDesc'),
     });
   };
 
@@ -65,7 +67,7 @@ export default function DailyView({ record, onEdit }: DailyViewProps) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-col">
-            <h3 className="text-lg text-muted-foreground">Total Balance</h3>
+            <h3 className="text-lg text-muted-foreground">{t('dailyView.totalBalance')}</h3>
             <p className="text-3xl font-bold text-primary">{formatCurrency(totalCombinedBalance)}</p>
         </div>
         <div className="flex items-center gap-2">
@@ -73,13 +75,13 @@ export default function DailyView({ record, onEdit }: DailyViewProps) {
             <Pencil className="h-4 w-4" />
           </Button>
           <Button onClick={onEdit} variant="outline" className="hidden sm:flex">
-            <Pencil className="mr-2 h-4 w-4" /> Edit
+            <Pencil className="mr-2 h-4 w-4" /> {t('dailyView.edit')}
           </Button>
           <Button onClick={handleCopy} size="icon" className="sm:hidden">
             <Copy className="h-4 w-4" />
           </Button>
           <Button onClick={handleCopy} className="hidden sm:flex">
-            <Copy className="mr-2 h-4 w-4" /> Copy
+            <Copy className="mr-2 h-4 w-4" /> {t('dailyView.copy')}
           </Button>
         </div>
       </div>
@@ -102,13 +104,13 @@ export default function DailyView({ record, onEdit }: DailyViewProps) {
                 <div className="flex flex-wrap gap-4">
                   <div className="flex-1 p-4 bg-background rounded-lg border min-w-[140px]">
                     <div className="flex items-center text-muted-foreground mb-2"><Banknote className="w-4 h-4 mr-2" />
-                      {isMobile ? "Balance" : "Account Balance"}
+                      {isMobile ? t('dailyView.balance') : t('dataEntry.accountBalance')}
                     </div>
                     <div className="text-2xl font-semibold">{formatCurrency(account.balance)}</div>
                   </div>
                   <div className="flex-1 p-4 bg-background rounded-lg border min-w-[140px]">
                     <div className="flex items-center text-muted-foreground mb-2"><PiggyBank className="w-4 h-4 mr-2" />
-                      {isMobile ? "Deposits" : "Fixed Deposits"}
+                      {isMobile ? t('dailyView.deposits') : t('dataEntry.fixedDeposits')}
                     </div>
                     <div className="text-2xl font-semibold">{formatCurrency(accountFdTotal)}</div>
                   </div>
@@ -117,7 +119,7 @@ export default function DailyView({ record, onEdit }: DailyViewProps) {
                 {account.fds.length > 0 && (
                   <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="item-1">
-                      <AccordionTrigger>FD Maturity Details</AccordionTrigger>
+                      <AccordionTrigger>{t('dailyView.fdMaturityDetails')}</AccordionTrigger>
                       <AccordionContent>
                         <ul className="space-y-2">
                           {account.fds.map(fd => {
@@ -136,7 +138,7 @@ export default function DailyView({ record, onEdit }: DailyViewProps) {
                                                 <span className={cn("font-semibold", isMatured && "text-destructive")}>{formatCurrency(fd.principal)}</span>
                                             </li>
                                         </TooltipTrigger>
-                                        {isMatured && <TooltipContent><p>This FD has matured.</p></TooltipContent>}
+                                        {isMatured && <TooltipContent><p>{t('dailyView.fdMatured')}</p></TooltipContent>}
                                     </Tooltip>
                                 </TooltipProvider>
                             )

@@ -54,7 +54,7 @@ describe('DailyView', () => {
 
   it('renders the total combined balance', () => {
     render(<DailyView record={mockRecord} onEdit={onEdit} />);
-    expect(screen.getByText('Total Balance')).toBeInTheDocument();
+    expect(screen.getByText('dailyView.totalBalance')).toBeInTheDocument();
     expect(screen.getByText('₹3,500')).toBeInTheDocument();
   });
 
@@ -68,7 +68,7 @@ describe('DailyView', () => {
 
   it('calls onEdit when the edit button is clicked', () => {
     render(<DailyView record={mockRecord} onEdit={onEdit} />);
-    fireEvent.click(screen.getByText('Edit'));
+    fireEvent.click(screen.getByText('dailyView.edit'));
     expect(onEdit).toHaveBeenCalledTimes(1);
   });
 
@@ -80,7 +80,7 @@ describe('DailyView', () => {
     });
 
     render(<DailyView record={mockRecord} onEdit={onEdit} />);
-    fireEvent.click(screen.getByText('Copy'));
+    fireEvent.click(screen.getByText('dailyView.copy'));
     expect(navigator.clipboard.writeText).toHaveBeenCalled();
   });
 });

@@ -1,0 +1,73 @@
+{
+  "login": {
+    "title": "लॉगिन / साइन अप",
+    "description": "लॉगिन करने या खाता बनाने के लिए नीचे अपना ईमेल दर्ज करें।",
+    "emailLabel": "ईमेल",
+    "emailPlaceholder": "m@example.com",
+    "passwordLabel": "पासवर्ड",
+    "loginButton": "लॉगिन",
+    "signUpButton": "साइन अप",
+    "forgotPasswordButton": "पासवर्ड भूल गए?",
+    "loading": "लोड हो रहा है...",
+    "loginErrorTitle": "लॉगिन त्रुटि",
+    "signupErrorTitle": "साइनअप त्रुटि",
+    "signupSuccessTitle": "साइनअप सफल",
+    "signupSuccessDescription": "कृपया अपने खाते की पुष्टि के लिए अपना ईमेल जांचें।",
+    "emailRequiredTitle": "ईमेल आवश्यक है",
+    "emailRequiredDescription": "कृपया अपना पासवर्ड रीसेट करने क�� लिए अपना ईमेल पता दर्ज करें।",
+    "passwordResetTitle": "पासवर्ड रीसेट ईमेल भेजा गया",
+    "passwordResetDescription": "अपना पासवर्ड रीसेट करने के लिए एक लिंक के लिए अपना ईमेल जांचें।",
+    "errorTitle": "त्रुटि"
+  },
+  "bankroll": {
+    "noData": "इस तारीख के लिए कोई डेटा दर्ज नहीं किया गया है।",
+    "addRecord": "रिकॉर्ड जोड़ें",
+    "balanceTracker": "बैलेंस ट्रैकर",
+    "trend": "प्रवृत्ति",
+    "dashboard": "डैशबोर्ड",
+    "logout": "लॉग आउट",
+    "selectDate": "तारीख चुनें",
+    "viewOrEnterData": "बैलेंस डेटा देखें या दर्ज करें।",
+    "balanceTrend": "बैलेंस ट्रेंड"
+  },
+  "dataEntry": {
+    "principalMin": "मूलधन सकारात्मक होना चाहिए",
+    "invalidDate": "अमान्य दिनांक प्रारूप। yyyy-mm-dd का प्रयोग कर���ं।",
+    "holderNameRequired": "धारक का नाम ���वश्यक है",
+    "bankNameRequired": "बैंक का नाम आवश्यक है",
+    "accountNumberRequired": "खाता संख्या आवश्यक है",
+    "balanceMin": "शेष राशि सकारात्मक होनी चाहिए",
+    "dataSaved": "डेटा सहेजा गया!",
+    "dataSavedDesc": "{{date}} के लिए शेष राशि की जानकारी सहेज ली गई है।",
+    "loadingPrevious": "पिछला डेटा लोड हो रहा है...",
+    "accountHolder": "खाता धारक",
+    "selectBank": "बैंक चुनें",
+    "accountNumber": "खाता संख्या",
+    "accountBalance": "खाते में शेष",
+    "fixedDeposits": "सावधि जमा",
+    "noFixedDeposits": "इस खाते के लिए कोई सावधि जमा नहीं है।",
+    "principal": "मूलधन",
+    "principalAmount": "मूलधन राशि",
+    "maturityDate": "परिपक्वता तिथि",
+    "fdMatured": "यह एफडी परिपक्व हो गई है। कृ���या इसे अपडेट करें या हटा दें।",
+    "invalidDateFormat": "अमान्य दिनांक प्रारूप। कृपया YYYY-MM-DD का उपयोग करें।",
+    "addAccount": "खाता जोड़ें",
+    "cancel": "रद्द करें",
+    "saveData": "डेटा सहेजें",
+    "addFd": "एफडी जोड़ें"
+  },
+  "dailyView": {
+    "totalBalance": "कुल शेष",
+    "edit": "संपादित करें",
+    "copy": "कॉपी करें",
+    "copied": "क्लिपबोर्ड पर कॉपी किया गया!",
+    "copiedDesc": "अब आप व्हाट्सएप में बैलेंस विवरण पेस्ट कर सकते हैं।",
+    "balance": "शेष राशि",
+    "deposits": "जमा",
+    "fdMaturityDetails": "एफडी परिपक्वता विवरण",
+    "fdMatured": "यह एफडी परिपक्व हो गई है।"
+  },
+  "footer": {
+    "repository": "सोर्स"
+  }
+}

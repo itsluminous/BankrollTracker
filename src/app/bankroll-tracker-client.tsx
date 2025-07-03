@@ -30,15 +30,20 @@ import TrendGraph from "@/components/trend-graph";
 import DailyView from "@/components/daily-view";
 import DataEntryForm from "@/components/data-entry-form";
 import type { DailyRecord } from "@/lib/types";
+import { useTranslation } from "react-i18next";
 
-const NoDataView = ({ onAdd }: { onAdd: () => void }) => (
-  <div className="text-center py-8">
-    <p className="text-muted-foreground mb-4">No data recorded for this date.</p>
-    <Button onClick={onAdd}>Add Record</Button>
-  </div>
-);
+const NoDataView = ({ onAdd }: { onAdd: () => void }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="text-center py-8">
+      <p className="text-muted-foreground mb-4">{t('bankroll.noData')}</p>
+      <Button onClick={onAdd}>{t('bankroll.addRecord')}</Button>
+    </div>
+  );
+};
 
 export default function BankrollTrackerClient() {
+  const { t } = useTranslation();
   const [showCalendarOverlay, setShowCalendarOverlay] = React.useState(false);
 
   const router = useRouter();
@@ -140,24 +145,24 @@ export default function BankrollTrackerClient() {
         <Link href="/" className="flex items-center gap-2 cursor-pointer">
           <Wallet className="h-6 w-6 text-primary" />
           <h1 className="text-xl font-semibold text-foreground">
-            Balance Tracker
+            {t('bankroll.balanceTracker')}
           </h1>
         </Link>
         <div className="flex items-center gap-4">
           {view === "dashboard" ? (
             <Button variant="outline" onClick={() => setView("trend")}>
               <LineChart className="mr-2 h-4 w-4" />
-              {!isMobile && <span>Trend</span>}
+              {!isMobile && <span>{t('bankroll.trend')}</span>}
             </Button>
           ) : (
             <Button variant="outline" onClick={() => setView("dashboard")}>
               <Home className="mr-2 h-4 w-4" />
-              {!isMobile && <span>Dashboard</span>}
+              {!isMobile && <span>{t('bankroll.dashboard')}</span>}
             </Button>
           )}
           <Button variant="outline" onClick={handleLogout}>
             <Power className={`h-4 w-4 ${isMobile ? '' : 'mr-2'}`} />
-            {!isMobile && <span>Logout</span>}
+            {!isMobile && <span>{t('bankroll.logout')}</span>}
           </Button>
         </div>
       </header>
@@ -181,9 +186,9 @@ export default function BankrollTrackerClient() {
                     </DialogTrigger>
                     <DialogContent className="w-auto max-w-fit">
                       <DialogHeader>
-                        <DialogTitle>Select Date</DialogTitle>
+                        <DialogTitle>{t('bankroll.selectDate')}</DialogTitle>
                         <DialogDescription>
-                          View or enter balance data.
+                          {t('bankroll.viewOrEnterData')}
                         </DialogDescription>
                       </DialogHeader>
                       <Calendar
@@ -229,7 +234,7 @@ export default function BankrollTrackerClient() {
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle>Balance Trend</CardTitle>
+              <CardTitle>{t('bankroll.balanceTrend')}</CardTitle>
             </CardHeader>
             <CardContent>
               {loading ? (
