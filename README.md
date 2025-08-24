@@ -4,7 +4,7 @@ Balance Tracker is a modern, responsive web application designed to help you eff
 
 Live app: [Balance Tracker](https://my-balance-tracker.vercel.app/)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/itsluminous/BankrollTracker&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/itsluminous/BankrollTracker&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_APP_URL)
 
 ## Screenshots
 
@@ -34,16 +34,18 @@ This project uses Supabase for data storage and authentication. To set up your S
 
 ## Environment Variables
 
-You need to set the following environment variables for the application to connect to Supabase:
+You need to set the following environment variables for the application to connect to Supabase and for proper password reset redirects:
 
 *   `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase Project URL.
 *   `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase Anon Public Key.
+*   `NEXT_PUBLIC_APP_URL`: The public URL of your deployed application (e.g., `https://my-balance-tracker.vercel.app`). This is used for password reset email redirects.
 
 For local development, create a `.env.local` file in the root of your project and add these variables:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL="YOUR_SUPABASE_PROJECT_URL"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="YOUR_SUPABASE_ANON_PUBLIC_KEY"
+NEXT_PUBLIC_APP_URL="http://localhost:3000" # Or your local development URL
 ```
 
 ## Getting Started
