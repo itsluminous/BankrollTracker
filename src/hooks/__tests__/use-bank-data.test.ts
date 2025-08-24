@@ -46,7 +46,7 @@ describe('useBankData', () => {
           ],
         },
       ];
-      (supabase.from('daily_records').select().eq().order as jest.Mock).mockResolvedValue({ data: mockRecords, error: null });
+      (supabase.from('daily_records').select().eq('user_id', 'test-user').order as jest.Mock).mockResolvedValue({ data: mockRecords, error: null });
 
       const { result } = renderHook(() => useBankData());
 
