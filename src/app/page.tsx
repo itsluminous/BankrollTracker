@@ -3,6 +3,8 @@ import BankrollTrackerClient from "./bankroll-tracker-client";
 import { ProtectedRoute } from "@/components/protected-route";
 import { Skeleton } from "@/components/ui/skeleton";
 
+export const runtime = 'edge';
+
 export default function BankrollTrackerPage() {
   return (
     <ProtectedRoute>

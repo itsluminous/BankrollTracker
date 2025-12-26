@@ -35,7 +35,8 @@ export default function DailyView({ record, onEdit }: DailyViewProps) {
   const totalCombinedBalance = totalBalance + totalFdBalance;
 
   const handleCopy = () => {
-    let text = `-----------------------------\n`;
+    let text = `${window.location.href}\n\n`;
+    text += `-----------------------------\n`;
     text += `---- Balance : ${format(parseISO(record.date), 'dd-MM-yyyy')} ---\n`;
     text += `-----------------------------\n`;
     text += `*${formatCurrency(totalCombinedBalance)}*\n\n`;
