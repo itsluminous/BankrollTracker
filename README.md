@@ -1,5 +1,10 @@
 # Balance Tracker
 
+[![CI](https://github.com/itsluminous/BankrollTracker/actions/workflows/ci.yml/badge.svg)](https://github.com/itsluminous/BankrollTracker/actions/workflows/ci.yml)
+[![CD](https://vercelbadge.vercel.app/api/itsluminous/BankrollTracker)](https://vercel.com)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5.9-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript)](https://www.typescriptlang.org/)
+
 Balance Tracker is a modern, responsive web application designed to help you effortlessly manage and visualize your financial data. Track your bank account balances and fixed deposits with an intuitive interface and get insights from a trend graph.
 
 Live app: [Balance Tracker](https://my-balance-tracker.vercel.app/)
