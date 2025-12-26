@@ -38,27 +38,36 @@ describe('TrendGraph', () => {
   const mockRecords = [
     {
       date: '2023-01-01',
-      accounts: [{ name: 'Savings', balance: 1000, fds: [] }],
-      id: '1',
-      userId: 'user1',
-      createdAt: '2023-01-01T00:00:00Z',
-      updatedAt: '2023-01-01T00:00:00Z',
+      accounts: [{ 
+        id: '1',
+        holderName: 'John Doe',
+        bankName: 'Test Bank',
+        accountNumber: '1234567890',
+        balance: 1000, 
+        fds: [] 
+      }],
     },
     {
       date: '2023-01-02',
-      accounts: [{ name: 'Savings', balance: 1500, fds: [] }],
-      id: '2',
-      userId: 'user1',
-      createdAt: '2023-01-02T00:00:00Z',
-      updatedAt: '2023-01-02T00:00:00Z',
+      accounts: [{ 
+        id: '2',
+        holderName: 'John Doe',
+        bankName: 'Test Bank',
+        accountNumber: '1234567890',
+        balance: 1500, 
+        fds: [] 
+      }],
     },
     {
       date: '2023-01-03',
-      accounts: [{ name: 'Savings', balance: 2000, fds: [] }],
-      id: '3',
-      userId: 'user1',
-      createdAt: '2023-01-03T00:00:00Z',
-      updatedAt: '2023-01-03T00:00:00Z',
+      accounts: [{ 
+        id: '3',
+        holderName: 'John Doe',
+        bankName: 'Test Bank',
+        accountNumber: '1234567890',
+        balance: 2000, 
+        fds: [] 
+      }],
     },
   ];
 
@@ -97,8 +106,22 @@ describe('TrendGraph', () => {
 
   it('formats Y-axis labels correctly for thousands', () => {
     const recordsWithThousands = [
-      { ...mockRecords[0], accounts: [{ name: 'Savings', balance: 10000, fds: [] }] },
-      { ...mockRecords[1], accounts: [{ name: 'Savings', balance: 15000, fds: [] }] },
+      { ...mockRecords[0], accounts: [{ 
+        id: '1',
+        holderName: 'John Doe',
+        bankName: 'Test Bank',
+        accountNumber: '1234567890',
+        balance: 10000, 
+        fds: [] 
+      }] },
+      { ...mockRecords[1], accounts: [{ 
+        id: '2',
+        holderName: 'John Doe',
+        bankName: 'Test Bank',
+        accountNumber: '1234567890',
+        balance: 15000, 
+        fds: [] 
+      }] },
     ];
     render(<TrendGraph allRecords={recordsWithThousands} />);
     // Since recharts components are mocked, we can't directly test the rendered tick values.
@@ -109,8 +132,22 @@ describe('TrendGraph', () => {
 
   it('formats Y-axis labels correctly for lakhs', () => {
     const recordsWithLakhs = [
-      { ...mockRecords[0], accounts: [{ name: 'Savings', balance: 100000, fds: [] }] },
-      { ...mockRecords[1], accounts: [{ name: 'Savings', balance: 150000, fds: [] }] },
+      { ...mockRecords[0], accounts: [{ 
+        id: '1',
+        holderName: 'John Doe',
+        bankName: 'Test Bank',
+        accountNumber: '1234567890',
+        balance: 100000, 
+        fds: [] 
+      }] },
+      { ...mockRecords[1], accounts: [{ 
+        id: '2',
+        holderName: 'John Doe',
+        bankName: 'Test Bank',
+        accountNumber: '1234567890',
+        balance: 150000, 
+        fds: [] 
+      }] },
     ];
     render(<TrendGraph allRecords={recordsWithLakhs} />);
     expect(screen.getByTestId('line-chart')).toBeInTheDocument();
@@ -118,8 +155,22 @@ describe('TrendGraph', () => {
 
   it('formats Y-axis labels correctly for crores', () => {
     const recordsWithCrores = [
-      { ...mockRecords[0], accounts: [{ name: 'Savings', balance: 10000000, fds: [] }] },
-      { ...mockRecords[1], accounts: [{ name: 'Savings', balance: 15000000, fds: [] }] },
+      { ...mockRecords[0], accounts: [{ 
+        id: '1',
+        holderName: 'John Doe',
+        bankName: 'Test Bank',
+        accountNumber: '1234567890',
+        balance: 10000000, 
+        fds: [] 
+      }] },
+      { ...mockRecords[1], accounts: [{ 
+        id: '2',
+        holderName: 'John Doe',
+        bankName: 'Test Bank',
+        accountNumber: '1234567890',
+        balance: 15000000, 
+        fds: [] 
+      }] },
     ];
     render(<TrendGraph allRecords={recordsWithCrores} />);
     expect(screen.getByTestId('line-chart')).toBeInTheDocument();
@@ -127,8 +178,22 @@ describe('TrendGraph', () => {
 
   it('formats Y-axis labels correctly for values less than thousands', () => {
     const recordsWithSmallValues = [
-      { ...mockRecords[0], accounts: [{ name: 'Savings', balance: 100, fds: [] }] },
-      { ...mockRecords[1], accounts: [{ name: 'Savings', balance: 500, fds: [] }] },
+      { ...mockRecords[0], accounts: [{ 
+        id: '1',
+        holderName: 'John Doe',
+        bankName: 'Test Bank',
+        accountNumber: '1234567890',
+        balance: 100, 
+        fds: [] 
+      }] },
+      { ...mockRecords[1], accounts: [{ 
+        id: '2',
+        holderName: 'John Doe',
+        bankName: 'Test Bank',
+        accountNumber: '1234567890',
+        balance: 500, 
+        fds: [] 
+      }] },
     ];
     render(<TrendGraph allRecords={recordsWithSmallValues} />);
     expect(screen.getByTestId('line-chart')).toBeInTheDocument();
@@ -156,19 +221,33 @@ describe('TrendGraph', () => {
     const recordsWithFDs = [
       {
         date: '2023-01-01',
-        accounts: [{ name: 'Savings', balance: 1000, fds: [{ principal: 500, interestRate: 0, startDate: '2023-01-01', endDate: '2024-01-01' }] }],
-        id: '1',
-        userId: 'user1',
-        createdAt: '2023-01-01T00:00:00Z',
-        updatedAt: '2023-01-01T00:00:00Z',
+        accounts: [{ 
+          id: '1',
+          holderName: 'John Doe',
+          bankName: 'Test Bank',
+          accountNumber: '1234567890',
+          balance: 1000, 
+          fds: [{ 
+            id: 'fd1',
+            principal: 500, 
+            maturityDate: '2024-01-01' 
+          }] 
+        }],
       },
       {
         date: '2023-01-02',
-        accounts: [{ name: 'Savings', balance: 1500, fds: [{ principal: 700, interestRate: 0, startDate: '2023-01-02', endDate: '2024-01-02' }] }],
-        id: '2',
-        userId: 'user1',
-        createdAt: '2023-01-02T00:00:00Z',
-        updatedAt: '2023-01-02T00:00:00Z',
+        accounts: [{ 
+          id: '2',
+          holderName: 'John Doe',
+          bankName: 'Test Bank',
+          accountNumber: '1234567890',
+          balance: 1500, 
+          fds: [{ 
+            id: 'fd2',
+            principal: 700, 
+            maturityDate: '2024-01-02' 
+          }] 
+        }],
       },
     ];
     render(<TrendGraph allRecords={recordsWithFDs} />);
