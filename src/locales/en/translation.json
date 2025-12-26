@@ -54,7 +54,11 @@
     "addAccount": "Add Account",
     "cancel": "Cancel",
     "saveData": "Save Data",
-    "addFd": "Add FD"
+    "addFd": "Add FD",
+    "editAccount": "Edit Account",
+    "bankName": "Bank Name",
+    "accountDeleted": "Account Deleted",
+    "accountDeletedDesc": "The account has been removed from this record."
   },
   "dailyView": {
     "totalBalance": "Total Balance",

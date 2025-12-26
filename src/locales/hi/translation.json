@@ -54,7 +54,11 @@
     "addAccount": "खाता जोड़ें",
     "cancel": "रद्द करें",
     "saveData": "डेटा सहेजें",
-    "addFd": "एफडी जोड़ें"
+    "addFd": "एफडी जोड़ें",
+    "editAccount": "खाता संपादित करें",
+    "bankName": "बैंक का नाम",
+    "accountDeleted": "खाता हटाया गया",
+    "accountDeletedDesc": "इस रिकॉर्ड से खाता हटा दिया गया है।"
   },
   "dailyView": {
     "totalBalance": "कुल शेष",

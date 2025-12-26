@@ -130,6 +130,22 @@ export default function BankrollTrackerClient() {
     }
   };
 
+  const handleAccountUpdate = (accountId: string, updatedAccount: any) => {
+    if (date && record) {
+      const updatedAccounts = record.accounts.map(acc => 
+        acc.id === accountId ? updatedAccount : acc
+      );
+      saveData(date, { accounts: updatedAccounts });
+    }
+  };
+
+  const handleAccountDelete = (accountId: string) => {
+    if (date && record) {
+      const updatedAccounts = record.accounts.filter(acc => acc.id !== accountId);
+      saveData(date, { accounts: updatedAccounts });
+    }
+  };
+
   if (!date) {
     return (
       <div className="flex min-h-screen w-full flex-col bg-background p-4 md:p-8">
@@ -224,6 +240,8 @@ export default function BankrollTrackerClient() {
                     key={selectedDateStr}
                     record={record}
                     onEdit={() => setIsEditing(true)}
+                    onAccountUpdate={handleAccountUpdate}
+                    onAccountDelete={handleAccountDelete}
                   />
                 ) : (
                   <NoDataView onAdd={() => setIsEditing(true)} />

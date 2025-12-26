@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import { format, parseISO, isBefore } from "date-fns"
-import { Copy, Banknote, Landmark, PiggyBank, CalendarClock, Pencil } from "lucide-react"
+import { Copy, Banknote, PiggyBank, CalendarClock, Pencil } from "lucide-react"
 
-import type { DailyRecord } from "@/lib/types"
+import type { DailyRecord, Account } from "@/lib/types"
 import { formatCurrency, cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -18,17 +18,39 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { BankLogo } from "@/components/bank-logo"
+import { AccountEditDialog } from "@/components/account-edit-dialog"
 import { useTranslation } from "react-i18next"
 
 interface DailyViewProps {
   record: DailyRecord;
   onEdit: () => void;
+  onAccountUpdate?: (accountId: string, updatedAccount: Account) => void;
+  onAccountDelete?: (accountId: string) => void;
 }
 
-export default function DailyView({ record, onEdit }: DailyViewProps) {
+export default function DailyView({ record, onEdit, onAccountUpdate, onAccountDelete }: DailyViewProps) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const [editingAccount, setEditingAccount] = React.useState<Account | null>(null);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+
+  const handleAccountEdit = (account: Account) => {
+    setEditingAccount(account);
+    setDialogOpen(true);
+  };
+
+  const handleAccountSave = (updatedAccount: Account) => {
+    if (onAccountUpdate) {
+      onAccountUpdate(updatedAccount.id, updatedAccount);
+    }
+  };
+
+  const handleAccountDelete = (accountId: string) => {
+    if (onAccountDelete) {
+      onAccountDelete(accountId);
+    }
+  };
 
   const totalBalance = record.accounts.reduce((acc, curr) => acc + curr.balance, 0);
   const totalFdBalance = record.accounts.reduce((acc, curr) => acc + curr.fds.reduce((fdAcc, fd) => fdAcc + fd.principal, 0), 0);
@@ -93,12 +115,33 @@ export default function DailyView({ record, onEdit }: DailyViewProps) {
           return (
             <AccordionItem value={account.id} key={account.id}>
               <AccordionTrigger className="text-lg hover:no-underline">
-                <div className="flex items-center gap-4 w-full">
+                <div className="flex items-center gap-4 flex-1">
                   <BankLogo bankName={account.bankName} />
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-left">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-left flex-1">
                     <span className="font-semibold">{account.holderName} - {account.bankName}</span>
                     <span className="text-sm text-muted-foreground font-mono">{account.accountNumber}</span>
                   </div>
+                  {!isMobile && onAccountUpdate && (
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10 shrink-0"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleAccountEdit(account);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleAccountEdit(account);
+                        }
+                      }}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </div>
+                  )}
                 </div>
               </AccordionTrigger>
               <AccordionContent className="space-y-4 pt-2">
@@ -154,6 +197,17 @@ export default function DailyView({ record, onEdit }: DailyViewProps) {
           )
         })}
       </Accordion>
+
+      {editingAccount && (
+        <AccountEditDialog
+          account={editingAccount}
+          selectedDate={parseISO(record.date)}
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          onSave={handleAccountSave}
+          onDelete={handleAccountDelete}
+        />
+      )}
     </div>
   )
 }
