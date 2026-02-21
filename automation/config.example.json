@@ -1,0 +1,39 @@
+{
+  "supabase_url": "YOUR_SUPABASE_URL",
+  "supabase_key": "YOUR_SUPABASE_ANON_KEY",
+  "supabase_email": "your-email@example.com",
+  "supabase_password": "your-bankroll-password",
+  "banks": [
+    {
+      "id": "hdfc_account_1",
+      "name": "HDFC",
+      "holder_name": "User1",
+      "username": "<customer_id>",
+      "password": "<password>",
+      "accounts": [
+        {"type": "Savings", "account_number": "50100053503968"},
+        {"type": "Current", "account_number": "99997759903721"}
+      ]
+    },
+    {
+      "id": "hdfc_account_2",
+      "name": "HDFC",
+      "holder_name": "User2",
+      "username": "<customer_id>",
+      "password": "<password>",
+      "accounts": [
+        {"type": "Savings", "account_number": "50100046477419"}
+      ]
+    },
+    {
+      "id": "pnb_user3",
+      "name": "PNB",
+      "holder_name": "User3",
+      "username": "<username>",
+      "password": "<password>",
+      "accounts": [
+        {"type": "Savings", "account_number": "3877000100116598"}
+      ]
+    }
+  ]
+}

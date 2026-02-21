@@ -43,3 +43,8 @@ next-env.d.ts
 # firebase
 firebase-debug.log
 firestore-debug.log
+
+# Automation
+automation/config.json
+automation/output/
+automation/temp_result.json
