@@ -165,6 +165,16 @@ def main():
             for acc in result.get("accounts", []):
                 all_fds.extend(acc.get("fds", []))
             
+            # Check if this bank has both savings and current accounts
+            extracted_account_types = [acc.get("type", "").lower() for acc in result.get("accounts", [])]
+            has_both_savings_and_current = ("savings" in extracted_account_types and 
+                                          "current" in extracted_account_types)
+            
+            if has_both_savings_and_current and all_fds:
+                print(f"  Bank has both savings and current accounts. FDs will be tagged to savings account only.")
+            elif all_fds:
+                print(f"  Bank has single account type. FDs will be tagged to the account.")
+            
             for acc in result.get("accounts", []):
                 # Match by last 4 digits of extracted account number
                 extracted_num = acc.get("account_number", "")
@@ -177,12 +187,22 @@ def main():
                 full_acc_num = config_acc.get("account_number", extracted_num)
                 label = config_acc.get("label", f"{bank['holder_name']} {acc['type']}")
                 
+                # Determine FDs to attach based on account type and bank configuration
+                fds_to_attach = []
+                if has_both_savings_and_current:
+                    # If bank has both savings and current, only attach FDs to savings account
+                    if acc.get("type", "").lower() == "savings":
+                        fds_to_attach = all_fds
+                else:
+                    # If bank has only one type of account, attach all FDs to it
+                    fds_to_attach = all_fds
+                
                 account_entry = {
                     "holder_name": bank["holder_name"],
                     "bank_name": bank["name"],
                     "account_number": full_acc_num,
                     "balance": acc.get("balance", 0),
-                    "fds": all_fds  # Attach all FDs to matched account
+                    "fds": fds_to_attach
                 }
                 
                 # Replace if exists, else append
@@ -196,7 +216,7 @@ def main():
                 else:
                     data["accounts"].append(account_entry)
                 
-                print(f"  {label}: ₹{acc.get('balance', 0):,}, FDs: {len(acc.get('fds', []))}")
+                print(f"  {label}: ₹{acc.get('balance', 0):,}, FDs: {len(fds_to_attach)}")
             
             save_today_data(data)
         else:
