@@ -134,7 +134,7 @@ def run():
         try_click(page, page.get_by_role("button", name="FD/RD"), "FD/RD button")
         page.wait_for_timeout(1000)
         try_click(page, page.get_by_role("link", name="Fixed Deposit"), "Fixed Deposit link")
-        page.wait_for_timeout(3000)
+        page.wait_for_timeout(10000)
         
         # Extract FDs
         fds = []
