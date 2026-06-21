@@ -60,6 +60,7 @@ def run_bank_script(bank_config):
     env = os.environ.copy()
     env["BANK_USERNAME"] = bank_config["username"]
     env["BANK_PASSWORD"] = bank_config["password"]
+    env["BANK_ID"] = bank_config["id"]
     env["OUTPUT_FILE"] = str(temp_output)
     
     import subprocess
@@ -223,6 +224,10 @@ def main():
             print(f"  Failed to get data")
         
         print()
+        
+        # Pause between banks to avoid rate limiting
+        import time
+        time.sleep(5)
     
     # Ask to upload
     if data["accounts"]:

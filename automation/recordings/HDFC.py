@@ -37,10 +37,34 @@ def run():
     username = os.environ.get("BANK_USERNAME", "")
     password = os.environ.get("BANK_PASSWORD", "")
     output_file = os.environ.get("OUTPUT_FILE", "result.json")
+    bank_id = os.environ.get("BANK_ID", "default")
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
-        page = browser.new_page()
+        import subprocess, time
+        
+        user_data_dir = os.path.join(os.path.dirname(__file__), "..", ".chrome-data", bank_id)
+        import shutil
+        if os.path.exists(user_data_dir):
+            shutil.rmtree(user_data_dir)
+        os.makedirs(user_data_dir, exist_ok=True)
+        
+        # Launch Chrome ourselves with remote debugging (no Playwright network proxy)
+        chrome_path = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        cdp_port = 9333
+        
+        chrome_proc = subprocess.Popen([
+            chrome_path,
+            f"--remote-debugging-port={cdp_port}",
+            f"--user-data-dir={user_data_dir}",
+            "--no-first-run",
+            "--no-default-browser-check",
+        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        
+        time.sleep(2)  # Wait for Chrome to start
+        
+        browser = p.chromium.connect_over_cdp(f"http://localhost:{cdp_port}")
+        context = browser.contexts[0]
+        page = context.pages[0] if context.pages else context.new_page()
 
         # Login
         log("Opening HDFC NetBanking...")
@@ -48,7 +72,9 @@ def run():
         
         log("Entering credentials...")
         page.get_by_role("textbox", name="Enter Customer ID/User ID").fill(username)
+        page.wait_for_timeout(500)
         page.get_by_role("textbox", name="Enter Password").fill(password)
+        page.wait_for_timeout(1000)
         page.get_by_role("button", name="Login", exact=True).click()
         
         page.wait_for_timeout(2000)
@@ -171,6 +197,7 @@ def run():
         try_click(page, page.get_by_role("button", name="Logout"), "Confirm logout", timeout=2000)
         
         browser.close()
+        chrome_proc.terminate()
 
 if __name__ == "__main__":
     run()
