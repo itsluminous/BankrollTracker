@@ -48,21 +48,34 @@ def run():
             shutil.rmtree(user_data_dir)
         os.makedirs(user_data_dir, exist_ok=True)
         
-        # Launch Chrome ourselves with remote debugging (no Playwright network proxy)
+        # Launch Chrome with remote debugging, trying ports until one works
         chrome_path = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-        cdp_port = 9333
+        chrome_proc = None
+        browser = None
         
-        chrome_proc = subprocess.Popen([
-            chrome_path,
-            f"--remote-debugging-port={cdp_port}",
-            f"--user-data-dir={user_data_dir}",
-            "--no-first-run",
-            "--no-default-browser-check",
-        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        for cdp_port in range(9333, 9343):
+            chrome_proc = subprocess.Popen([
+                chrome_path,
+                f"--remote-debugging-port={cdp_port}",
+                f"--user-data-dir={user_data_dir}",
+                "--no-first-run",
+                "--no-default-browser-check",
+            ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            
+            time.sleep(2)
+            
+            try:
+                browser = p.chromium.connect_over_cdp(f"http://localhost:{cdp_port}")
+                log(f"Connected on port {cdp_port}")
+                break
+            except Exception:
+                chrome_proc.terminate()
+                chrome_proc = None
+                continue
         
-        time.sleep(2)  # Wait for Chrome to start
+        if not browser:
+            raise RuntimeError("Could not launch Chrome on any port (9333-9342)")
         
-        browser = p.chromium.connect_over_cdp(f"http://localhost:{cdp_port}")
         context = browser.contexts[0]
         page = context.pages[0] if context.pages else context.new_page()
 
