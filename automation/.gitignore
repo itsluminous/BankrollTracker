@@ -1,1 +1,4 @@
 .chrome-data/
+config.json
+config.json.enc
+__pycache__/

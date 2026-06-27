@@ -6,7 +6,7 @@ Automates fetching bank balances and FDs, then uploads to BankrollTracker.
 
 1. Install dependencies:
 ```bash
-pip install playwright supabase
+pip install -r requirements.txt
 playwright install chromium
 ```
 
@@ -18,6 +18,11 @@ cp config.example.json config.json
 3. Edit `config.json` with your:
    - Supabase credentials (from your BankrollTracker .env.local)
    - Bank login details
+
+4. Encrypt your config (deletes plaintext):
+```bash
+python crypto_config.py encrypt
+```
 
 ## Recording Bank Workflows
 
@@ -49,11 +54,12 @@ python run.py
 ```
 
 The script will:
-1. Process each bank in config.json
-2. Run the recorded script (browser opens, you handle OTP/captcha)
-3. Extract balance and FD data
-4. Save to `output/YYYY-MM-DD.json`
-5. Ask if you want to upload to BankrollTracker
+1. Ask for your config decryption password
+2. Process each bank in config
+3. Run the recorded script (browser opens, you handle OTP/captcha)
+4. Extract balance and FD data
+5. Save to `output/YYYY-MM-DD.json`
+6. Ask if you want to upload to BankrollTracker
 
 ## Output Format
 

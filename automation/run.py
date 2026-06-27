@@ -12,15 +12,20 @@ from pathlib import Path
 from supabase import create_client
 
 OUTPUT_DIR = Path(__file__).parent / "output"
-CONFIG_FILE = Path(__file__).parent / "config.json"
 
 
 def load_config():
-    if not CONFIG_FILE.exists():
-        print(f"Error: {CONFIG_FILE} not found. Copy config.example.json to config.json and fill in your details.")
+    from crypto_config import decrypt_config, CONFIG_FILE, ENCRYPTED_FILE
+    # Support both: encrypted (preferred) or plaintext fallback
+    if ENCRYPTED_FILE.exists():
+        return decrypt_config()
+    elif CONFIG_FILE.exists():
+        print("\033[1;31mWarning: config.json is unencrypted. Run: python crypto_config.py encrypt\033[0m")
+        with open(CONFIG_FILE) as f:
+            return json.load(f)
+    else:
+        print("Error: No config found. Need config.json.enc (or config.json)")
         sys.exit(1)
-    with open(CONFIG_FILE) as f:
-        return json.load(f)
 
 
 def get_today_output_file():
